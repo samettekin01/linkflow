@@ -1,0 +1,21 @@
+@import "../../../../styles/style.module.scss";
+
+.content {
+    @extend .cardStyles;
+    height: 200px;
+}
+
+.linkCard {
+    display: grid;
+    gap: 10px;
+}
+
+.linkProfileDiv {
+    display: flex;
+    align-items: center;
+}
+
+.linkProfile {
+    font-size: 35px;
+    margin-right: 10px;
+}

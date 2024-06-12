@@ -1,0 +1,122 @@
+@import "../../../styles/style.module.scss";
+
+/* NavBar Styles */
+
+.navBar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: $menuHeight;
+    background-color: $background1;
+    z-index: 1;
+}
+
+/*Logo Styles*/
+
+.logoDiv {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: 260px;
+    height: $menuHeight;
+    left: $leftPosition;
+}
+
+.logo {
+
+    position: absolute;
+    font-style: normal;
+    font-weight: 900;
+    font-size: 36px;
+
+    background: $lg-background;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    cursor: pointer;
+}
+
+/*Search Input Styles*/
+
+.searchDiv {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: $menuHeight;
+    width: 400px;
+    left: 40%;
+}
+
+.searchButton {
+    position: absolute;
+    width: 30px;
+    padding: 5px;
+    height: $searchHeight;
+}
+
+.searchInput {
+    width: 60%;
+    height: $searchHeight;
+    padding-left: 30px;
+    border: 1px solid $fcolor1;
+    border-radius: $radius5;
+    -webkit-transition: $transitionTime;
+    transition: $transitionTime;
+    outline: none;
+    background-color: $background1;
+}
+
+.searchInput:focus {
+    border: 2px solid $fcolor1;
+    width: 90%;
+    background-color: $fcolor2;
+}
+
+/*Utils Style*/
+
+.utils {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    gap: 26px;
+    width: 200px;
+    height: $menuHeight;
+    right: 2%;
+}
+
+.utilsPosition {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: $font12;
+    color: $fcolor3;
+    transition: $transitionTime;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.utilsIcon {
+    font-size: 25px;
+}
+
+.home {
+    @extend .utilsPosition;
+}
+
+.add {
+    @extend .utilsPosition;
+}
+
+.profile {
+    @extend .utilsPosition;
+}
+
+.profile:hover,
+.add:hover,
+.home:hover {
+    color: $background2;
+}

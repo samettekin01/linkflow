@@ -1,0 +1,27 @@
+@import "../../../styles/style.module.scss";
+
+.body {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding-top: $cardGapC;
+}
+
+.bodyContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-left: $leftPosition;
+    width: 60%;
+    row-gap: $cardGapR;
+}
+
+.contentContainer {
+    display: grid;
+    row-gap: $cardGapR;
+}
+
+.topicsContainer {
+    width: 23%;
+}

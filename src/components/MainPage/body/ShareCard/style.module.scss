@@ -1,0 +1,40 @@
+@import "../../../../styles/style.module.scss";
+
+.shareCardDiv {
+    @extend .cardStyles;
+    height: 200px;
+}
+
+.shareUser {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.shareProfile {
+    font-size: 56px;
+    margin-right: 10px;
+}
+
+.shareInput {
+    width: 100%;
+    height: 60px;
+    border-radius: 50px;
+    padding-left: 20px;
+    background-color: $background1;
+    outline: none;
+    border: 2px solid $fcolor1;
+    transition: background-color $transitionTime;
+}
+
+.shareInput::placeholder {
+    color: $fcolor1;
+}
+
+.shareInput:focus{
+    background-color: $background2;
+}
+
+.shareInput:focus::placeholder{
+    color: #fff;
+}

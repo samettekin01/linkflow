@@ -1,0 +1,19 @@
+@import "../../../../styles/style.module.scss";
+
+.topicsContainer {
+    position: sticky;
+    top: 85px;
+    background-color: $background1;
+    margin-left: $cardGapC;
+    padding: $cardPadding;
+    border-radius: $radius10;
+    box-shadow: $bscolor;
+}
+
+.topicTitle {
+    margin-bottom: 10px;
+}
+
+.topics {
+    margin-bottom: 5px;
+}
