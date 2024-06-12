@@ -1,0 +1,42 @@
+$background1: #ffffff;
+$background2: #48748B;
+$fcolor1: #000000;
+$fcolor2: #FFFFFF;
+$fcolor3: #636363;
+$icolor: #880085;
+$lg-background: linear-gradient(263.94deg, #880085 20%, #000AFD 50%, #000000 80%);
+$bscolor: 5px 5px 8px 0px rgba(0,0,0,0.15);
+
+$radius5: 5px;
+$radius10: 10px;
+
+$searchHeight: 30px;
+$menuHeight: 60px;
+
+$leftPosition: 15%;
+$cardPadding: 30px;
+
+$cardGapR: 15px;
+$cardGapC: 25px;
+
+$transitionTime: 0.3s;
+
+$font10: 10px;
+$font12: 12px;
+$font14: 14px;
+$font16: 16px;
+$font18: 18px;
+$font20: 20px;
+
+
+.cardStyles {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: $radius10;
+    padding: $cardPadding;
+    background-color: $background1;
+    box-shadow: $bscolor;
+}
