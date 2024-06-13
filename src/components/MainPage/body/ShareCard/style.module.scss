@@ -1,8 +1,8 @@
-@import "../../../../styles/style.module.scss";
+@import "../../../../styles/variable.scss";
 
 .shareCardDiv {
     @extend .cardStyles;
-    height: 200px;
+    position: relative;
 }
 
 .shareUser {
@@ -37,4 +37,21 @@
 
 .shareInput:focus::placeholder{
     color: #fff;
+}
+
+.button{
+    background-color: $background2;
+    width: 100px;
+    margin-left: auto;
+    margin-top: 10px;
+    color: #fff;
+    border: none;
+    padding: 5px;
+    border-radius: $radius10;
+    cursor: pointer;
+    transition: background-color $transitionTime;
+}
+
+.button:hover{
+    background-color: $background3;
 }
