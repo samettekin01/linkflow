@@ -1,0 +1,88 @@
+@import "../../styles/variable.scss";
+
+.postScreenContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: $trBackground;
+    z-index: 1;
+}
+
+.postScrenn {
+    position: relative;
+    width: 60%;
+    margin-top: 5%;
+    padding: $cardPadding;
+    border-radius: $radius10;
+    background-color: $background3;
+    color: $fcolor2;
+    display: flex;
+    flex-direction: column;
+}
+
+.postDivContainer {
+    position: relative;
+    display: grid;
+    flex-direction: row;
+    grid-template-columns: auto;
+    gap: 10px;
+}
+
+.postSpan::after {
+    content: ":";
+    position: absolute;
+    left: 100px;
+}
+
+.postDivContainer>input {
+    width: 100%;
+    height: 30px;
+    padding-left: 10px;
+    background-color: $background3;
+    color: $fcolor2;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid $background1;
+}
+
+.postDivContainer>input::placeholder{
+    color: $fcolor2;
+}
+
+.postInputDescription {
+    width: 100%;
+    height: 100%;
+    background-color: $background3;
+    color: $fcolor2;
+    padding: 10px;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid $background1;
+    border-top: 2px solid $background1;
+    resize: none;
+}
+
+.postInputDescription::placeholder{
+    color: $fcolor2;
+}
+
+.postButtonDiv {
+    margin-left: auto;
+}
+
+.postButton {
+    border: none;
+    padding: 5px 20px;
+    background-color: $icolor;
+    color: $fcolor2;
+    border-radius: $radius10;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.postButton:hover {
+    background-color: $icolor2;
+}

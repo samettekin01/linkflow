@@ -1,9 +1,9 @@
 import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsSearch, BsBoxArrowLeft } from "react-icons/bs";
-import Styles from "./style.module.scss";
 import { auth, googleProvider } from "../../../firebase/firebase";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { UserInformations } from "../../../utils/types";
+import Styles from "./style.module.scss";
 
 const Menu: React.FC = () => {
     const [userState, setUserState] = useState<UserInformations | null>(null)
@@ -16,15 +16,14 @@ const Menu: React.FC = () => {
     useEffect(() =>
         onAuthStateChanged(auth, user => {
             if (user) {
-                console.log("giriş yapıldı")
                 const userInfo: UserInformations = {
                     uid: user.uid,
                     displayName: user.displayName || "No Name",
-                    email: user.email || "No Email"
+                    email: user.email || "No Email",
+                    photoURL: user.photoURL || "No Photo"
                 };
                 setUserState(userInfo)
             } else {
-                console.log("giriş yapılmamış")
                 setUserState(null)
             }
         }), [])
@@ -47,13 +46,15 @@ const Menu: React.FC = () => {
                     Add
                 </div>
                 <div className={Styles.profile} onClick={login}>
-                    <BsPersonFill className={Styles.utilsIcon} />
-                    {userState ? userState.displayName : "Profile"}
+                    {userState === null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${userState.photoURL}`} className={Styles.profileStyle} alt="profile" />}
+                    {userState ? userState.displayName.split(" ")[0] : "Profile"}
                 </div>
-                <div className={Styles.profile}>
-                    <BsBoxArrowLeft className={Styles.utilsIcon} onClick={handleSignOut} />
-                    Sign Out
-                </div>
+                {userState &&
+                    <div className={Styles.profile} onClick={handleSignOut}>
+                        <BsBoxArrowLeft className={Styles.utilsIcon} />
+                        Sign Out
+                    </div>
+                }
             </div>
         </div>
     )
