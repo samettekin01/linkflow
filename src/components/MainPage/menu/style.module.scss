@@ -105,14 +105,17 @@
 
 .home {
     @extend .utilsPosition;
+    font-size: $font12;
 }
 
 .add {
     @extend .utilsPosition;
+    font-size: $font12;
 }
 
 .profile {
     @extend .utilsPosition;
+    font-size: $font12;
 }
 
 .profile:hover,
@@ -122,5 +125,5 @@
 }
 
 .profileStyle {
-    width: 30px;
+    width: 27px;
 }

@@ -1,13 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "../../../firebase/firebase"
+import { ContentSliceTypes } from "../../../utils/types"
 
-interface InitialState {
-    comments: Array<any>;
-}
-
-const initialState: InitialState = {
-    comments: []
+const initialState: ContentSliceTypes = {
+    comments: [],
+    commnetsStatus: "",
+    user: [],
+    userStatus: "",
+    post: [],
+    postStatus: ""
 }
 
 export const handleComments = createAsyncThunk("comments", async () => {
@@ -35,6 +37,33 @@ const commentsSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(handleComments.fulfilled, (state, action) => {
             state.comments = action.payload
+            state.commnetsStatus = "fulfilled"
+        })
+        builder.addCase(handleComments.pending, state => {
+            state.commnetsStatus = "pending"
+        })
+        builder.addCase(handleComments.rejected, state => {
+            state.commnetsStatus = "rejected"
+        })
+        builder.addCase(handleUser.fulfilled, (state, action) => {
+            state.user = action.payload
+            state.userStatus = "fulfilled"
+        })
+        builder.addCase(handleUser.pending, state => {
+            state.userStatus = "pending"
+        })
+        builder.addCase(handleUser.rejected, state => {
+            state.userStatus = "rejected"
+        })
+        builder.addCase(handlePosts.fulfilled, (state, action) => {
+            state.post = action.payload
+            state.postStatus = "fulfilled"
+        })
+        builder.addCase(handlePosts.pending, state => {
+            state.postStatus = "pending"
+        })
+        builder.addCase(handlePosts.rejected, state => {
+            state.postStatus = "rejected"
         })
     }
 })

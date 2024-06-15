@@ -31,6 +31,13 @@
     gap: 10px;
 }
 
+.exitButton{
+    margin-left: auto;
+    font-size: 25px;
+    cursor: pointer;
+    color: $fcolor2;
+}
+
 .postSpan::after {
     content: ":";
     position: absolute;

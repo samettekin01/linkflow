@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import commentsReducer from "../slice/contentSlice"
+import stateReducer from "../slice/stateSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import userReducer from "../slice/userSlice";
 
 export const store = configureStore({
   reducer: {
-    comments: commentsReducer
+    user: userReducer,
+    comments: commentsReducer,
+    post: stateReducer
   },
 })
 

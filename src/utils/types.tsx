@@ -1,37 +1,67 @@
+import { DocumentData } from "firebase/firestore"
+
 export interface PostState {
-    created_by?: String
-    commentsId?: String
-    title?: {
-        created_at?: Number
-        description?: String
-        topic?: String
+    createdById: string
+    commentsId: string
+    createdBy: string
+    content: {
+        createdAt: number
+        description: string
+        topic: string
+        link: string
+        title: string
     }
 }
 
 export interface EditUsersPost {
     comments: {
-        postID: String
+        postID: string
     }
-    created_at: Number
-    email: String
+    createdAt: number
+    email: string
     posts: {
-        postId: String
+        postId: string
     }
-    userName: String
+    userName: string
 }
 
 export interface EditComments {
     comments: {
-        comment_text: String
-        created_at: Number
-        userId: String
-        username: String
+        commentext: string
+        createdAt: number
+        userId: string
+        username: string
     }
 }
 
 export interface UserInformations {
-    displayName: String
-    email: String
-    uid: String
-    photoURL: String
+    displayName: string
+    email: string
+    uid: string
+    photoURL: string
+}
+
+export interface PostFormikValues {
+    title: string
+    topic: string
+    link: string
+    description: string
+}
+
+export interface ContentSliceTypes {
+    comments: Array<DocumentData>
+    commnetsStatus: string
+    user: Array<DocumentData>
+    userStatus: string
+    post: Array<DocumentData>
+    postStatus: string
+}
+
+export interface IsOpen {
+    post: boolean
+}
+
+export interface UserInitialState {
+    user: UserInformations | null
+    userStatus: string
 }
