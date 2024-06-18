@@ -5,28 +5,31 @@
 .navBar {
     position: sticky;
     top: 0;
-    display: flex;
-    flex-direction: row;
     width: 100%;
     height: $menuHeight;
     background-color: $background1;
     z-index: 1;
 }
 
+.navBarContainer{
+    display: flex;
+    position: absolute;
+    left: $leftPosition;
+    justify-content: space-between;
+    width: 83%;
+}
+
 /*Logo Styles*/
 
 .logoDiv {
-    position: absolute;
     display: flex;
+    position: relative;
     align-items: center;
-    width: 260px;
     height: $menuHeight;
-    left: $leftPosition;
+    left: 0;
 }
 
 .logo {
-
-    position: absolute;
     font-style: normal;
     font-weight: 900;
     font-size: 36px;
@@ -42,12 +45,10 @@
 /*Search Input Styles*/
 
 .searchDiv {
-    position: relative;
     display: flex;
     align-items: center;
     height: $menuHeight;
-    width: 400px;
-    left: 40%;
+    width: 350px;
 }
 
 .searchButton {
@@ -70,21 +71,16 @@
 }
 
 .searchInput:focus {
-    border: 2px solid $fcolor1;
-    width: 90%;
+    width: 100%;
     background-color: $fcolor2;
 }
 
 /*Utils Style*/
 
 .utils {
-    position: absolute;
     display: flex;
-    flex-direction: row;
     gap: 26px;
-    width: 200px;
     height: $menuHeight;
-    right: 2%;
 }
 
 .utilsPosition {

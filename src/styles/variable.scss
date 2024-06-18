@@ -7,6 +7,7 @@ $fcolor2: #FFFFFF;
 $fcolor3: #636363;
 $icolor: #880085;
 $icolor2: #b600b3;
+$cardBorderColor: 1px solid #8800863b;
 $lg-background: linear-gradient(263.94deg, #880085 20%, #000AFD 50%, #000000 80%);
 $bscolor: 5px 5px 8px 0px rgba(0, 0, 0, 0.15);
 
@@ -39,6 +40,7 @@ $font20: 20px;
     flex-direction: column;
     justify-content: center;
     border-radius: $radius10;
+    border: $cardBorderColor;
     padding: $cardPadding;
     background-color: $background1;
     box-shadow: $bscolor;
