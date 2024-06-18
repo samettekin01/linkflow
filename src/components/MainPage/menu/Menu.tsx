@@ -7,23 +7,27 @@ import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 
 const Menu: React.FC = () => {
-    const userState = useAppSelector(state => state.user.user)
+    const user = useAppSelector(state => state.user.user)
     const dispatch = useAppDispatch()
 
     const login = async () => {
-        try {
-            await signInWithPopup(auth, googleProvider)
-            dispatch(handleUserSign())
-        } catch (error) {
-            console.log("Oturum açılırken bir hata oluştu: ", error)
+        if (!user) {
+            try {
+                await signInWithPopup(auth, googleProvider)
+                dispatch(handleUserSign())
+            } catch (error) {
+                console.log("Oturum açılırken bir hata oluştu: ", error)
+            }
         }
     }
     const handleSignOut = async () => {
-        try {
-            await signOut(auth)
-            dispatch(handleUserSign())
-        } catch (error) {
-            console.log("Oturum sonlandırılırken bir hata oluştu: ", error)
+        if (user) {
+            try {
+                await signOut(auth)
+                dispatch(handleUserSign())
+            } catch (error) {
+                console.log("Oturum sonlandırılırken bir hata oluştu: ", error)
+            }
         }
     }
 
@@ -33,32 +37,33 @@ const Menu: React.FC = () => {
 
     return (
         <div className={Styles.navBar}>
-            <div className={Styles.menu}></div>
-            <div className={Styles.logoDiv}>
-                <div className={Styles.logo}>Linkup</div>
-            </div>
-            <div className={Styles.searchDiv}>
-                <BsSearch className={Styles.searchButton} /><input className={Styles.searchInput} type="search" placeholder="Search" />
-            </div>
-            <div className={Styles.utils}>
-                <div className={Styles.home}>
-                    <BsHouseFill className={Styles.utilsIcon} />
-                    <p>Home</p>
+            <div className={Styles.navBarContainer}>
+                <div className={Styles.logoDiv}>
+                    <div className={Styles.logo}>Linkup</div>
                 </div>
-                <div className={Styles.add}>
-                    <BsPlusCircleFill className={Styles.utilsIcon} />
-                    Add
+                <div className={Styles.searchDiv}>
+                    <BsSearch className={Styles.searchButton} /><input className={Styles.searchInput} type="search" placeholder="Search" />
                 </div>
-                <div className={Styles.profile} onClick={login}>
-                    {userState == null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${userState.photoURL}`} className={Styles.profileStyle} alt="profile" />}
-                    {userState ? userState.displayName.split(" ")[0] : "Profile"}
-                </div>
-                {userState &&
-                    <div className={Styles.profile} onClick={handleSignOut}>
-                        <BsBoxArrowLeft className={Styles.utilsIcon} />
-                        Sign Out
+                <div className={Styles.utils}>
+                    <div className={Styles.home}>
+                        <BsHouseFill className={Styles.utilsIcon} />
+                        <p>Home</p>
                     </div>
-                }
+                    <div className={Styles.add}>
+                        <BsPlusCircleFill className={Styles.utilsIcon} />
+                        Add
+                    </div>
+                    <div className={Styles.profile} onClick={login}>
+                        {user == null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
+                        {user ? user.displayName.split(" ")[0] : "Profile"}
+                    </div>
+                    {user &&
+                        <div className={Styles.profile} onClick={handleSignOut}>
+                            <BsBoxArrowLeft className={Styles.utilsIcon} />
+                            Sign Out
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     )

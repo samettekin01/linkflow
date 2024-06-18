@@ -39,6 +39,9 @@ export interface UserInformations {
     email: string
     uid: string
     photoURL: string
+    createdAt: number
+    posts: { [postId: string]: string }
+    comments: {postID: string}
 }
 
 export interface PostFormikValues {
@@ -46,6 +49,9 @@ export interface PostFormikValues {
     topic: string
     link: string
     description: string
+    categories: { [key: string]: string }
+    selectedCategory: string
+    newCategory: string
 }
 
 export interface ContentSliceTypes {
@@ -64,4 +70,9 @@ export interface IsOpen {
 export interface UserInitialState {
     user: UserInformations | null
     userStatus: string
+}
+
+export interface CategoriesTypes {
+    categories: Array<DocumentData>
+    categoriesStatus: string
 }
