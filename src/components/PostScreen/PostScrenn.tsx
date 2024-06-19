@@ -1,25 +1,33 @@
-import { useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setIsOpen } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { useFormik } from "formik";
-import { PostFormikValues } from "../../utils/types";
+import { getUserData, handleUserSign } from "../redux/slice/userSlice";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
-import { BsX } from "react-icons/bs";
-import { handleUserSign } from "../redux/slice/userSlice";
-import Style from "./style.module.scss"
 import { handleCategories } from "../redux/slice/categoriesSlice";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../../firebase/firebase";
+import { PostFormikValues } from "../../utils/types";
+import { useFormik } from "formik";
+import { BsX } from "react-icons/bs";
+import Style from "./style.module.scss"
 
 
 function PostScreen() {
     const dispatch = useAppDispatch();
+
     const user = useAppSelector(state => state.user.user)
     const categoriesRef = useAppSelector(state => state.categories.categories)
     const isOpen = useAppSelector(state => state.post.post)
+    const userDataRef = useAppSelector(state => state.user.userData)
+
     const postRef = collection(db, "posts")
     const commentsRef = collection(db, "comments")
     const categoryRef = collection(db, "categoryId")
+
     const postContainer = useRef<HTMLDivElement>(null)
+    const titleRef = useRef<HTMLInputElement | null>(null)
+    const [allowedFiles, setAllowedFiles] = useState<string>("")
+
     const categoriesID = process.env.REACT_APP_CATEGORIES_ID
 
     const time = new Date().valueOf()
@@ -37,17 +45,12 @@ function PostScreen() {
             Other: ""
         },
         selectedCategory: "",
-        newCategory: ""
+        newCategory: "",
+        img: null
     }
-
-    const handleOutsideClick = (event: MouseEvent) => {
-        if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
-            dispatch(setIsOpen(false));
-        }
-    };
-
     const createPostRef = async (post: object) => {
         const postId = await addDoc(postRef, post)
+        userDataRef && updateDoc(doc(db, "users", `${user?.uid}`), { posts: { ...userDataRef.posts, [postId.id]: time } })
         return postId.id
     }
 
@@ -56,7 +59,7 @@ function PostScreen() {
         return postCommentId.id
     }
 
-    const createCategoryRef = async (categoryName: string, postId: string,) => {
+    const createCategoryRef = async (categoryName: string, postId: string) => {
         const cg = categoriesRef.map(d => d)
         const postCreateId = await addDoc(categoryRef, {
             [categoryName]: {
@@ -70,7 +73,18 @@ function PostScreen() {
         return postCreateId.id
     }
 
-    const { values, handleSubmit, handleChange } = useFormik({
+    const dowloadURL = async (postId: string) => {
+        if (values.img) {
+            if (user) {
+                const storageRef = ref(storage, `photos/${postId}`)
+                const snapshot = await uploadBytes(storageRef, values.img)
+                const downdloadURL = await getDownloadURL(snapshot.ref)
+                return downdloadURL
+            }
+        }
+    }
+
+    const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
             const commentsId = await createCommentRef()
@@ -85,7 +99,8 @@ function PostScreen() {
                     topic: values.topic,
                     categories: category,
                     link: values.link,
-                    descripton: values.description
+                    descripton: values.description,
+                    img: await dowloadURL(commentsId)
                 }
             }
             const postId = await createPostRef(content);
@@ -97,6 +112,13 @@ function PostScreen() {
     useEffect(() => {
         dispatch(handleUserSign())
         dispatch(handleCategories())
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
+                dispatch(setIsOpen(false));
+            }
+        };
+
+        user && dispatch(getUserData(user?.uid))
         if (isOpen) {
             document.body.style.overflow = 'hidden';
             document.addEventListener('mousedown', handleOutsideClick);
@@ -104,7 +126,10 @@ function PostScreen() {
             document.body.style.overflow = '';
             document.removeEventListener('mousedown', handleOutsideClick);
         }
-    }, [isOpen, dispatch, categoriesID]);
+        if (titleRef.current) {
+            titleRef.current.focus();
+        }
+    }, [isOpen, dispatch]);
 
     return (
         <div className={Style.postScreenContainer}>
@@ -117,6 +142,7 @@ function PostScreen() {
                         placeholder="Add Title"
                         value={values.title}
                         onChange={handleChange}
+                        ref={titleRef}
                         required
                     />
                     <input
@@ -165,8 +191,29 @@ function PostScreen() {
                         onChange={handleChange}
                         required
                     />
+                    {allowedFiles && <label>Invalid file</label>}
+                    <input
+                        type="file"
+                        name="imgFile"
+                        accept="image/png, image/jpeg, image/bmp"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            const allowedTypes = ["image/png", "image/jpeg", "image/bmp"];
+                            if (e.currentTarget.files && e.currentTarget.files[0]) {
+                                const file = e.currentTarget.files
+                                if (!allowedTypes.includes(file[0].type)) {
+                                    setAllowedFiles("invalid file")
+                                    e.currentTarget.value = ""
+                                } else {
+                                    setFieldValue("img", file[0])
+                                    setAllowedFiles("")
+                                }
+                            }
+                        }}
+                        required
+                    />
                     <div className={Style.postButtonDiv}>
                         <input
+                            name="img"
                             type="submit"
                             className={Style.postButton}
                             value="Done"

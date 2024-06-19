@@ -40,8 +40,8 @@ export interface UserInformations {
     uid: string
     photoURL: string
     createdAt: number
-    posts: { [postId: string]: string }
-    comments: {postID: string}
+    posts: { [key: string]: string }
+    comments: { [key: string]: string }
 }
 
 export interface PostFormikValues {
@@ -52,6 +52,7 @@ export interface PostFormikValues {
     categories: { [key: string]: string }
     selectedCategory: string
     newCategory: string
+    img: Blob | Uint8Array | ArrayBuffer | null
 }
 
 export interface ContentSliceTypes {
@@ -70,6 +71,8 @@ export interface IsOpen {
 export interface UserInitialState {
     user: UserInformations | null
     userStatus: string
+    userData: DocumentData | undefined
+    userDataStatus: string
 }
 
 export interface CategoriesTypes {
