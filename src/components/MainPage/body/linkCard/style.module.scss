@@ -2,7 +2,7 @@
 
 .content {
     @extend .cardStyles;
-    height: 200px;
+    max-height: 200px;
 }
 
 .linkCard {
@@ -17,5 +17,18 @@
 
 .linkProfile {
     font-size: 35px;
+    margin-right: 10px;
+}
+
+.linkCardContent{
+    display: flex;
+    flex-direction: row;
+}
+
+.linkCardImg{
+    width: 100px;
+    background-size: 100%;
+    background-position-y: 50%;
+    background-position-x: 50%;
     margin-right: 10px;
 }
