@@ -26,7 +26,6 @@ function LinkCard() {
                     />
                     <div>
                         <h2>Title</h2>
-                        <h4>Topic</h4>
                         <p>Description</p>
                     </div>
                 </div>

@@ -1,18 +1,25 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore"
 import { db } from "../../../firebase/firebase"
 import { CategoriesTypes } from "../../../utils/types"
 
 
 const initialState: CategoriesTypes = {
     categories: [],
-    categoriesStatus: ""
+    categoriesStatus: "",
+    category: [],
+    categoryStatus: ""
 }
 
 export const handleCategories = createAsyncThunk("categories", async () => {
-    const querySnapshot = await getDocs(collection(db, "categories"))
+    const querySnapshot = await getDocs(query(collection(db, "categories"), orderBy("categories", "desc")))
     const categories = querySnapshot.docs.map(doc => doc.data())
     return categories
+})
+
+export const handleCategory = createAsyncThunk("category", async (id: string) => {
+    const category = (await getDoc(doc(db, "categoryId", id))).data()
+    return category
 })
 
 const categoriesSlice = createSlice({
@@ -29,6 +36,16 @@ const categoriesSlice = createSlice({
         })
         builder.addCase(handleCategories.rejected, state => {
             state.categoriesStatus = "rejected"
+        })
+        builder.addCase(handleCategory.fulfilled, (state, action) => {
+            state.category = action.payload
+            state.categoryStatus = "fulfilled"
+        })
+        builder.addCase(handleCategory.pending, state => {
+            state.categoryStatus = "pending"
+        })
+        builder.addCase(handleCategory.rejected, state => {
+            state.categoryStatus = "rejected"
         })
     }
 })
