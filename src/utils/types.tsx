@@ -46,7 +46,6 @@ export interface UserInformations {
 
 export interface PostFormikValues {
     title: string
-    topic: string
     link: string
     description: string
     categories: { [key: string]: string }
@@ -78,4 +77,6 @@ export interface UserInitialState {
 export interface CategoriesTypes {
     categories: Array<DocumentData>
     categoriesStatus: string
+    category: DocumentData | undefined
+    categoryStatus: string
 }
