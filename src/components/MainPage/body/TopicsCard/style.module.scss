@@ -15,6 +15,11 @@
     margin-bottom: 10px;
 }
 
+.topics:hover {
+    text-decoration: underline;
+}
+
 .topics {
     margin-bottom: 5px;
+    cursor: pointer;
 }

@@ -13,22 +13,46 @@
 .linkProfileDiv {
     display: flex;
     align-items: center;
+    border-bottom: 1px solid #00000052;
+    padding-bottom: 5px;
+}
+
+.linkProfileDiv > p:nth-child(2){
+    font-weight: bold;
+}
+
+.linkProfileDiv > p:nth-child(3){
+    margin: 0 5px 5px 5px;
 }
 
 .linkProfile {
-    font-size: 35px;
+    width: 35px;
     margin-right: 10px;
 }
 
-.linkCardContent{
+.linkCardContent {
     display: flex;
     flex-direction: row;
+    gap: 5px;
 }
 
-.linkCardImg{
+.linkCardImg {
     width: 100px;
     background-size: 100%;
     background-position-y: 50%;
     background-position-x: 50%;
-    margin-right: 10px;
+    background-repeat: no-repeat;
+}
+
+.cardContent{
+    width: 100%;
+}
+
+.cardContent>p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
