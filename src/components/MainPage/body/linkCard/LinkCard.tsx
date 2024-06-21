@@ -1,13 +1,13 @@
 import { DocumentData } from "firebase/firestore";
 import Styles from "./style.module.scss"
 
-function LinkCard({ data }: { data: DocumentData }) {
+function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
     const formatUnixTimeStamp = (time: number) => {
         const date = new Date(time).toLocaleDateString()
         return date
     }
     return (
-        <div className={Styles.content}>
+        <div className={Styles.content} onClick={() => onClick(data)}>
             <div className={Styles.linkCard}>
                 <div className={Styles.linkProfileDiv}>
                     <img

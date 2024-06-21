@@ -1,9 +1,9 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { DocumentData, collection, doc, getDoc, getDocs } from "firebase/firestore"
 import { db } from "../../../firebase/firebase"
-import { ContentSliceTypes } from "../../../utils/types"
+import { ContentSliceTypes, PostData, PostState } from "../../../utils/types"
 
-const initialState: ContentSliceTypes = {
+const initialState: ContentSliceTypes | PostState = {
     comments: [],
     commentsStatus: "",
     user: [],
@@ -11,7 +11,8 @@ const initialState: ContentSliceTypes = {
     post: [],
     postStatus: "",
     content: [],
-    contentStatus: ""
+    contentStatus: "",
+    currentPost: null,
 }
 
 export const handleComments = createAsyncThunk("comments", async () => {
@@ -39,7 +40,7 @@ export const setContent = createAsyncThunk("content", async (id: string) => {
         for (const dataKey of Object.keys(categoryRef)) {
             for (const postID of categoryRef[dataKey].posts) {
                 const postDoc = (await getDoc(doc(db, "posts", postID))).data()
-                postDoc && querySnapshot.push(postDoc)
+                postDoc && querySnapshot.push({ ...postDoc, postID })
             }
         }
     }
@@ -49,7 +50,11 @@ export const setContent = createAsyncThunk("content", async (id: string) => {
 const contentSlice = createSlice({
     name: "content",
     initialState,
-    reducers: {},
+    reducers: {
+        setCurrentPost: (state, action: PayloadAction<PostData>) => {
+            state.currentPost = action.payload
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(handleComments.fulfilled, (state, action) => {
             state.comments = action.payload
@@ -94,4 +99,5 @@ const contentSlice = createSlice({
     }
 })
 
+export const { setCurrentPost } = contentSlice.actions;
 export default contentSlice.reducer;

@@ -1,0 +1,130 @@
+@import "../../styles/variable.scss";
+
+.PostCardContainer {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: $trBackground;
+    z-index: 1;
+}
+
+.postContentContainer {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    width: 60%;
+    height: 90vh;
+    margin-top: 3%;
+    padding: $cardPadding;
+    border-radius: $radius10;
+    background-color: $background3;
+    color: $fcolor2;
+}
+
+.postScrenn {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.postCommentsContainer {
+    border-left: 1px solid $fcolor2;
+    padding: $padding10;
+}
+
+.postDivContainer {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto;
+}
+
+.postInputDescription {
+    width: 100%;
+    height: 100%;
+    background-color: $background3;
+    color: $fcolor2;
+    padding: $padding10;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid $background1;
+    resize: none;
+}
+
+.exitButton {
+    margin-left: auto;
+    font-size: 35px;
+    cursor: pointer;
+    color: $fcolor2;
+}
+
+.linkProfileDiv {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid $fcolor2;
+    padding-bottom: 5px;
+}
+
+.linkProfileDiv>p:nth-child(2) {
+    font-weight: bold;
+}
+
+.linkProfileDiv>p:nth-child(3) {
+    margin: 0 5px 5px 5px;
+}
+
+.linkProfile {
+    width: 35px;
+    margin-right: 10px;
+}
+
+.postImg {
+    width: 50%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.contentTextContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid $fcolor2;
+    width: 100%;
+    overflow: auto;
+    height: 90%;
+}
+
+.postScrenn>h2 {
+    margin: 5px 0;
+}
+
+.commentsUserProfile {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.userCommentContainer{
+    margin-top: 10px;
+}
+
+.userCommentContainer>p {
+    padding: 0 0 10px 5px ;
+    border-bottom: 1px solid $fcolor2;
+}
+
+.userProfileDiv {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.userProfileDiv>p:nth-child(2) {
+    font-weight: bold;
+}
+
+.userProfileDiv>p:nth-child(3) {
+    margin: 0 5px 5px 5px;
+}

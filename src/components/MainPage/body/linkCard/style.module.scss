@@ -3,6 +3,7 @@
 .content {
     @extend .cardStyles;
     max-height: 200px;
+    cursor: pointer;
 }
 
 .linkCard {

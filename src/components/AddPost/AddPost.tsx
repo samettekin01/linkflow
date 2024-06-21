@@ -9,7 +9,7 @@ import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
-import Style from "./style.module.scss"
+import Styles from "./style.module.scss"
 
 
 function AddPost() {
@@ -54,7 +54,7 @@ function AddPost() {
         return postCommentId.id
     }
 
-    const createCategoryRef = async (categoryName: string, postId: string, title: string, desc: string, img: string | undefined) => {
+    const createCategoryRef = async (categoryName: string, postId: string) => {
         const cg = categoriesRef.map(d => d)
         const postCreateId = await addDoc(categoryRef, {
             [categoryName]: {
@@ -64,18 +64,6 @@ function AddPost() {
                 posts: [postId]
             }
         })
-        // {
-        //     [postId]: {
-        //         user: {
-        //             name: user?.displayName,
-        //             img: user?.photoURL
-        //         },
-        //         title: title,
-        //         descripton: desc,
-        //         img: img,
-        //         postId: postId
-        //     }
-        // }
         cg.map(data => updateDoc(doc(db, "categories", `${categoriesID}`), {
             categories: {
                 ...data.categories,
@@ -130,7 +118,7 @@ function AddPost() {
             }
             const postId = await createPostRef(content);
             if (values.selectedCategory === "Other") {
-                await createCategoryRef(values.newCategory, postId, values.title, values.description, getURL)
+                await createCategoryRef(values.newCategory, postId)
             } else {
                 await updateCategory(values.selectedCategory, postId)
             }
@@ -159,15 +147,13 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
-        console.log(user)
-
     }, [isOpen, dispatch, values.selectedCategory, categoriesRef]);
 
     return (
-        <div className={Style.postScreenContainer}>
-            <div className={Style.postScrenn} ref={postContainer}>
-                <BsX className={Style.exitButton} onClick={() => dispatch(setIsOpen(false))} />
-                <form className={Style.postDivContainer} onSubmit={handleSubmit}>
+        <div className={Styles.postScreenContainer}>
+            <div className={Styles.postScrenn} ref={postContainer}>
+                <BsX className={Styles.exitButton} onClick={() => dispatch(setIsOpen(false))} />
+                <form className={Styles.postDivContainer} onSubmit={handleSubmit}>
                     <input
                         type="text"
                         name="title"
@@ -208,7 +194,7 @@ function AddPost() {
                     <textarea
                         name="description"
                         placeholder="AddDescription"
-                        className={Style.postInputDescription}
+                        className={Styles.postInputDescription}
                         value={values.description}
                         rows={5}
                         cols={60}
@@ -236,11 +222,11 @@ function AddPost() {
                         }}
                         required
                     />
-                    <div className={Style.postButtonDiv}>
+                    <div className={Styles.postButtonDiv}>
                         <input
                             name="img"
                             type="submit"
-                            className={Style.postButton}
+                            className={Styles.postButton}
                             value="Done"
                             disabled={submitStatus}
                         />

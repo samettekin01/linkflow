@@ -4,26 +4,29 @@ import { useAppDispatch, useAppSelector } from './components/redux/store/store';
 import AddPost from './components/AddPost/AddPost';
 import { useEffect } from 'react';
 import { handleCategories } from './components/redux/slice/categoriesSlice';
+import PostCard from './components/PostCard/PostCard';
 import Styles from "./styles/style.module.scss"
 
 function App() {
-  const postState = useAppSelector(state => state.post.post)
+  const postStatus = useAppSelector(state => state.post.post)
+  const getPostStatus = useAppSelector(state => state.post.getPost)
   const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(handleCategories())
-    if (postState) {
+    if (postStatus) {
       document.body.style.overflow = "hidden"
     } else {
       document.body.style.overflow = ""
     }
-  }, [postState, dispatch])
+  }, [postStatus, dispatch])
   return (
     <div className={Styles.container}>
       <Menu />
       <div>
         <Content />
       </div>
-      {postState && <AddPost />}
+      {postStatus && <AddPost />}
+      {getPostStatus && <PostCard />}
     </div>
   );
 }

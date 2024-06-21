@@ -63,10 +63,12 @@ export interface ContentSliceTypes {
     postStatus: string
     content: DocumentData | undefined
     contentStatus: string
+    currentPost: PostData | null
 }
 
 export interface IsOpen {
     post: boolean
+    getPost: boolean
 }
 
 export interface UserInitialState {
@@ -81,4 +83,25 @@ export interface CategoriesTypes {
     categoriesStatus: string
     category: DocumentData | undefined
     categoryStatus: string
+}
+
+
+export interface PostData {
+    commentsId: string,
+    createdBy: string,
+    createdName: string,
+    userImg: string,
+    postId: string,
+    content: {
+        createdAt: number,
+        title: string,
+        category: string,
+        link: string,
+        description: string,
+        img: string
+    }
+}
+
+export interface PostState {
+    currentPost: PostData | null;
 }
