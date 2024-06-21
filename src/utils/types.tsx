@@ -40,7 +40,7 @@ export interface UserInformations {
     uid: string
     photoURL: string
     createdAt: number
-    posts: { [key: string]: string }
+    posts: []
     comments: { [key: string]: string }
 }
 
@@ -56,11 +56,13 @@ export interface PostFormikValues {
 
 export interface ContentSliceTypes {
     comments: Array<DocumentData>
-    commnetsStatus: string
+    commentsStatus: string
     user: Array<DocumentData>
     userStatus: string
     post: Array<DocumentData>
     postStatus: string
+    content: DocumentData | undefined
+    contentStatus: string
 }
 
 export interface IsOpen {

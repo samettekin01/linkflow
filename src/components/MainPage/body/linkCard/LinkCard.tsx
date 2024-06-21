@@ -1,32 +1,34 @@
-import { BsPersonFill } from "react-icons/bs";
-import { useState } from "react";
-import { getDownloadURL, ref } from "firebase/storage";
-import { storage } from "../../../../firebase/firebase";
+import { DocumentData } from "firebase/firestore";
 import Styles from "./style.module.scss"
 
-function LinkCard() {
-    const imgRef = ref(storage, "photos/xGnpP7jpA9MrnKhp2lbh")
-    const [url, setURL] = useState<string | undefined>(undefined)
-    getDownloadURL(imgRef)
-        .then(p => setURL(p))
-        .catch(e => console.log(e))
+function LinkCard({ data }: { data: DocumentData }) {
+    const formatUnixTimeStamp = (time: number) => {
+        const date = new Date(time).toLocaleDateString()
+        return date
+    }
     return (
         <div className={Styles.content}>
             <div className={Styles.linkCard}>
                 <div className={Styles.linkProfileDiv}>
-                    <BsPersonFill className={Styles.linkProfile} />
-                    <p>User Name</p>
+                    <img
+                        src={data.userImg}
+                        className={Styles.linkProfile}
+                        alt={data.title}
+                    />
+                    <p>{data.createdName}</p>
+                    <p>.</p>
+                    <p> {formatUnixTimeStamp(data.content.createdAt)}</p>
                 </div>
                 <div className={Styles.linkCardContent}>
                     <div
                         className={Styles.linkCardImg}
                         style={{
-                            backgroundImage: `url(${url})`
+                            backgroundImage: `url(${data.content.img})`
                         }}
                     />
-                    <div>
-                        <h2>Title</h2>
-                        <p>Description</p>
+                    <div className={Styles.cardContent}>
+                        <h2>{data.content.title}</h2>
+                        <p>{data.content.description}</p>
                     </div>
                 </div>
             </div>

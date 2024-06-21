@@ -45,7 +45,7 @@ function AddPost() {
     }
     const createPostRef = async (post: object) => {
         const postId = await addDoc(postRef, post)
-        userDataRef && updateDoc(doc(db, "users", `${user?.uid}`), { posts: { ...userDataRef.posts, [postId.id]: time } })
+        userDataRef && updateDoc(doc(db, "users", `${user?.uid}`), { posts: [...userDataRef.posts, postId.id] })
         return postId.id
     }
 
@@ -61,20 +61,21 @@ function AddPost() {
                 createdAt: time,
                 createdBy: user?.uid,
                 createdName: user?.displayName,
-                posts: {
-                    [postId]: {
-                        user: {
-                            name: user?.displayName,
-                            img: user?.photoURL
-                        },
-                        title: title,
-                        descripton: desc,
-                        img: img,
-                        postId: postId
-                    }
-                }
+                posts: [postId]
             }
         })
+        // {
+        //     [postId]: {
+        //         user: {
+        //             name: user?.displayName,
+        //             img: user?.photoURL
+        //         },
+        //         title: title,
+        //         descripton: desc,
+        //         img: img,
+        //         postId: postId
+        //     }
+        // }
         cg.map(data => updateDoc(doc(db, "categories", `${categoriesID}`), {
             categories: {
                 ...data.categories,
@@ -85,21 +86,12 @@ function AddPost() {
         return postCreateId.id
     }
 
-    const updateCategory = async (categoryName: string, postId: string, title: string, desc: string, img: string | undefined) => {
+    const updateCategory = async (categoryName: string, postId: string) => {
         const post = getCategory && await getCategory[categoryName]
         await updateDoc(doc(db, "categoryId", categoriesRef[0].categories[categoryName]), {
-            [`${categoryName}.posts`]: {
-                ...post.posts,
-                [postId]: {
-                    user: {
-                        name: user?.displayName,
-                        img: user?.photoURL
-                    },
-                    title: title,
-                    descrition: desc,
-                    img: img,
-                    postId: postId
-                }
+            [categoryName]: {
+                ...post,
+                posts: [...post.posts, postId]
             }
         });
     }
@@ -123,15 +115,16 @@ function AddPost() {
             const getURL = await dowloadURL(commentsId)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const content = {
-                commnetsId: commentsId,
+                commentsId: commentsId,
                 createdBy: user?.uid,
                 createdName: user?.displayName,
+                userImg: user?.photoURL,
                 content: {
                     createdAt: time,
                     title: values.title,
                     category: category,
                     link: values.link,
-                    descripton: values.description,
+                    description: values.description,
                     img: getURL
                 }
             }
@@ -139,7 +132,7 @@ function AddPost() {
             if (values.selectedCategory === "Other") {
                 await createCategoryRef(values.newCategory, postId, values.title, values.description, getURL)
             } else {
-                await updateCategory(values.selectedCategory, postId, values.title, values.description, getURL)
+                await updateCategory(values.selectedCategory, postId)
             }
             setSubmitStatus(false)
             dispatch(setIsOpen(false))
@@ -155,7 +148,6 @@ function AddPost() {
                 dispatch(setIsOpen(false));
             }
         };
-
         user && dispatch(getUserData(user?.uid))
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -167,7 +159,9 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
-    }, [isOpen, dispatch, values.selectedCategory]);
+        console.log(user)
+
+    }, [isOpen, dispatch, values.selectedCategory, categoriesRef]);
 
     return (
         <div className={Style.postScreenContainer}>

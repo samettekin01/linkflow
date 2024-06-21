@@ -19,7 +19,7 @@ export const handleUserSign = createAsyncThunk<UserInformations | null>("user", 
                         photoURL: user.photoURL || "No Photo",
                         createdAt: new Date().valueOf(),
                         comments: {},
-                        posts: {}
+                        posts: []
                     };
                     if (userDocSnapshot.exists()) {
                         resolve(userInfo)

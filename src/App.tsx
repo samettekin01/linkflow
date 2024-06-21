@@ -2,9 +2,9 @@ import Content from './components/MainPage/content/Content';
 import Menu from './components/MainPage/menu/Menu';
 import { useAppDispatch, useAppSelector } from './components/redux/store/store';
 import AddPost from './components/AddPost/AddPost';
-import Styles from "./styles/style.module.scss"
 import { useEffect } from 'react';
 import { handleCategories } from './components/redux/slice/categoriesSlice';
+import Styles from "./styles/style.module.scss"
 
 function App() {
   const postState = useAppSelector(state => state.post.post)
