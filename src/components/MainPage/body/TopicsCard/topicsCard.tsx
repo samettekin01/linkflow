@@ -8,6 +8,7 @@ function TopicsCard() {
     const handleGetCategory = async (id: string) => {
         dispatch(setContent(id))
     }
+    
     return (
         <div className={Styles.topicsContainer}>
             <div className={Styles.topicTitle}><h1>Topics</h1></div>

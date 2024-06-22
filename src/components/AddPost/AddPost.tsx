@@ -3,12 +3,12 @@ import { setIsOpen } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
 import { getUserData, handleUserSign } from "../redux/slice/userSlice";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
+import { handleCategory } from "../redux/slice/categoriesSlice";
 import Styles from "./style.module.scss"
 
 
@@ -25,7 +25,7 @@ function AddPost() {
     const commentsRef = collection(db, "comments")
     const categoryRef = collection(db, "categoryId")
 
-    const postContainer = useRef<HTMLDivElement>(null)
+    const postContainer = useRef<HTMLDivElement | null>(null)
     const titleRef = useRef<HTMLInputElement | null>(null)
     const [allowedFiles, setAllowedFiles] = useState<string>("")
     const [submitStatus, setSubmitStatus] = useState<boolean>(false)
@@ -75,7 +75,7 @@ function AddPost() {
     }
 
     const updateCategory = async (categoryName: string, postId: string) => {
-        const post = getCategory && await getCategory[categoryName]
+        const post = getCategory && getCategory[categoryName]
         await updateDoc(doc(db, "categoryId", categoriesRef[0].categories[categoryName]), {
             [categoryName]: {
                 ...post,
@@ -129,8 +129,7 @@ function AddPost() {
 
     useEffect(() => {
         dispatch(handleUserSign())
-        dispatch(handleCategories())
-        dispatch(handleCategory(categoriesRef[0].categories[values.selectedCategory]))
+        handleCategory(categoriesRef[0].categories[values.selectedCategory])
         const handleOutsideClick = (event: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpen(false));
@@ -147,7 +146,7 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
-    }, [isOpen, dispatch, values.selectedCategory, categoriesRef]);
+    }, [isOpen, dispatch, values.selectedCategory]);
 
     return (
         <div className={Styles.postScreenContainer}>

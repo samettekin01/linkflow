@@ -12,9 +12,9 @@
 }
 
 .postScrenn {
-    position: relative;
+    position: sticky;
+    top: 30px;
     width: 60%;
-    margin-top: 5%;
     padding: $cardPadding;
     border-radius: $radius10;
     background-color: $background3;

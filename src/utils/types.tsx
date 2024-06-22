@@ -64,6 +64,8 @@ export interface ContentSliceTypes {
     content: DocumentData | undefined
     contentStatus: string
     currentPost: PostData | null
+    comment: DocumentData | undefined
+    commentStatus: string
 }
 
 export interface IsOpen {
@@ -91,7 +93,7 @@ export interface PostData {
     createdBy: string,
     createdName: string,
     userImg: string,
-    postId: string,
+    postID: string,
     content: {
         createdAt: number,
         title: string,
@@ -104,4 +106,32 @@ export interface PostData {
 
 export interface PostState {
     currentPost: PostData | null;
+}
+
+export interface CommentData {
+    key: string
+    value: {
+        commentId: string
+        postId: string
+        userId: string
+        username: string
+        userImg: string
+        content: string
+        createdAt: number
+        updatedAt: number
+        replies: {}
+    }
+}
+
+export interface Replies {
+    replyId1: {
+        replyId: string
+        commentId: string
+        userId: string
+        username: string
+        userImg: string
+        content: string
+        createdAt: number
+        updatedAt: number
+    }
 }

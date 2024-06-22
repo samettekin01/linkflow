@@ -13,12 +13,25 @@ const initialState: ContentSliceTypes | PostState = {
     content: [],
     contentStatus: "",
     currentPost: null,
+    comment: [],
+    commentStatus: ""
 }
 
 export const handleComments = createAsyncThunk("comments", async () => {
     const querySnapshot = await getDocs((collection(db, "comments")))
     const comment = querySnapshot.docs.map(doc => doc.data())
     return comment
+})
+
+export const handleComment = createAsyncThunk("comment", async (id: string) => {
+    const comment = (await getDoc(doc(db, "comments", id))).data()
+    let docs = []
+    if (comment) {
+        for (const [key, value] of Object.entries(comment)) {
+            docs.push({ key, value })
+        }
+    }
+    return docs
 })
 
 export const handleUser = createAsyncThunk("users", async () => {
@@ -95,6 +108,16 @@ const contentSlice = createSlice({
         })
         builder.addCase(setContent.rejected, state => {
             state.contentStatus = "rejected"
+        })
+        builder.addCase(handleComment.fulfilled, (state, action) => {
+            state.comment = action.payload
+            state.commentStatus = "fulfilled"
+        })
+        builder.addCase(handleComment.pending, state => {
+            state.commentStatus = "pending"
+        })
+        builder.addCase(handleComment.rejected, state => {
+            state.commentStatus = "rejected"
         })
     }
 })

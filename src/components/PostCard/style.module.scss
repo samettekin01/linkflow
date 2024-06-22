@@ -12,12 +12,12 @@
 }
 
 .postContentContainer {
-    position: relative;
+    position: sticky;
     display: flex;
     gap: 10px;
     width: 60%;
     height: 90vh;
-    margin-top: 3%;
+    top: 30px;
     padding: $cardPadding;
     border-radius: $radius10;
     background-color: $background3;
@@ -28,11 +28,22 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 70%;
 }
 
 .postCommentsContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 30%;
     border-left: 1px solid $fcolor2;
+}
+
+.postComments {
     padding: $padding10;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 }
 
 .postDivContainer {
@@ -54,7 +65,9 @@
 }
 
 .exitButton {
-    margin-left: auto;
+    position: absolute;
+    right: 10px;
+    top: 10px;
     font-size: 35px;
     cursor: pointer;
     color: $fcolor2;
@@ -80,6 +93,20 @@
     margin-right: 10px;
 }
 
+.userProfileDiv {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.userProfileDiv>p:nth-child(2) {
+    font-weight: bold;
+}
+
+.userProfileDiv>p:nth-child(3) {
+    margin: 0 5px 5px 5px;
+}
+
 .postImg {
     width: 50%;
     height: auto;
@@ -102,29 +129,47 @@
 }
 
 .commentsUserProfile {
-    width: 20px;
+    width: 25px;
     margin-right: 10px;
 }
 
-.userCommentContainer{
+.userCommentContainer {
     margin-top: 10px;
 }
 
 .userCommentContainer>p {
-    padding: 0 0 10px 5px ;
+    padding: 0 0 10px 5px;
     border-bottom: 1px solid $fcolor2;
 }
 
-.userProfileDiv {
+.commentUtils {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding-bottom: 5px;
 }
 
-.userProfileDiv>p:nth-child(2) {
-    font-weight: bold;
+.commentInput {
+    width: 100%;
+    height: 30px;
+    background-color: $background3;
+    border: none;
+    border-bottom: 1px solid $fcolor2;
+    outline: none;
+    margin-left: 5px;
+    padding: 5px;
 }
 
-.userProfileDiv>p:nth-child(3) {
-    margin: 0 5px 5px 5px;
+.commentInput:focus-visible{
+    color: $fcolor2;
+}
+
+.commentButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    color: $fcolor2;
+    height: 100%;
+    font-size: 15px;
 }
