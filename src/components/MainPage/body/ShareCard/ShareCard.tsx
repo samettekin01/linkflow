@@ -1,15 +1,10 @@
 import { setIsOpen } from "../../../redux/slice/stateSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store";
-import { useEffect } from "react";
-import { handleUserSign } from "../../../redux/slice/userSlice";
 import Styles from "./style.module.scss"
 
 function ShareCard() {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user.user)
-    useEffect(() => {
-        dispatch(handleUserSign())
-    }, [dispatch])
     return (
         <div className={Styles.shareCardDiv}>
             <div className={Styles.shareUser}>

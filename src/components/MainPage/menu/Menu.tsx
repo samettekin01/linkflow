@@ -39,7 +39,7 @@ const Menu: React.FC = () => {
         <div className={Styles.navBar}>
             <div className={Styles.navBarContainer}>
                 <div className={Styles.logoDiv}>
-                    <div className={Styles.logo}>Linkup</div>
+                    <div className={Styles.logo}>LinkFlow</div>
                 </div>
                 <div className={Styles.searchDiv}>
                     <BsSearch className={Styles.searchButton} /><input className={Styles.searchInput} type="search" placeholder="Search" />

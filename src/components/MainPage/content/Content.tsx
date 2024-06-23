@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import ShareCard from "../body/ShareCard/ShareCard"
-import TopicsCard from "../body/TopicsCard/topicsCard"
+import TopicsCard from "../body/TopicsCard/TopicsCard"
 import LinkCard from "../body/linkCard/LinkCard"
 import Styles from "./style.module.scss"
 import { useAppDispatch, useAppSelector } from "../../redux/store/store"
@@ -17,16 +17,16 @@ function Content() {
         dispatch(setIsPostOpen(true))
         dispatch(setCurrentPost(data))
     }
-    useEffect(() => {
-        dispatch(handleUserSign())
-    }, [dispatch])
+    // useEffect(() => {
+    //     dispatch(handleUserSign())
+    // }, [dispatch])
     return (
         <div className={Styles.body}>
             <div className={Styles.bodyContainer}>
                 {user ? <ShareCard /> : ""}
                 <div className={Styles.contentContainer}>
                     {
-                        content ? content.map((d: any) => <LinkCard key={d.postID} data={d} onClick={handlePost}/>) : "...Loading"
+                        content ? content.map((d: any) => <LinkCard key={d.postID} data={d} onClick={handlePost} />) : "...Loading"
                     }
                 </div>
             </div>

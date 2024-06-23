@@ -11,8 +11,8 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
             <div className={Styles.linkCard}>
                 <div className={Styles.linkProfileDiv}>
                     <img
-                        src={data.userImg}
                         className={Styles.linkProfile}
+                        src={data.userImg}
                         alt={data.title}
                     />
                     <p>{data.createdName}</p>

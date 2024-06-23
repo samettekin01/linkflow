@@ -55,8 +55,8 @@ export interface PostFormikValues {
 }
 
 export interface ContentSliceTypes {
-    comments: Array<DocumentData>
-    commentsStatus: string
+    commentsCollection: DocumentData | undefined
+    commentsCollectionStatus: string
     user: Array<DocumentData>
     userStatus: string
     post: Array<DocumentData>
@@ -109,8 +109,8 @@ export interface PostState {
 }
 
 export interface CommentData {
-    key: string
-    value: {
+    dataKey: string
+    comment: {
         commentId: string
         postId: string
         userId: string

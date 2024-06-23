@@ -91,6 +91,7 @@
 .linkProfile {
     width: 35px;
     margin-right: 10px;
+    clip-path: circle();
 }
 
 .userProfileDiv {
@@ -131,6 +132,7 @@
 .commentsUserProfile {
     width: 25px;
     margin-right: 10px;
+    clip-path: circle();
 }
 
 .userCommentContainer {

@@ -1,14 +1,14 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setIsOpen } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { getUserData, handleUserSign } from "../redux/slice/userSlice";
+import { getUserData } from "../redux/slice/userSlice";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
+import { handleCategory } from "../redux/slice/categoriesSlice";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
-import { handleCategory } from "../redux/slice/categoriesSlice";
 import Styles from "./style.module.scss"
 
 
@@ -16,21 +16,23 @@ function AddPost() {
     const dispatch = useAppDispatch();
 
     const user = useAppSelector(state => state.user.user)
-    const categoriesRef = useAppSelector(state => state.categories.categories)
+    const getCategories = useAppSelector(state => state.categories.categories)
     const getCategory = useAppSelector(state => state.categories.category)
     const isOpen = useAppSelector(state => state.post.post)
     const userDataRef = useAppSelector(state => state.user.userData)
 
+    const categoriesID = process.env.REACT_APP_CATEGORIES_ID
+
     const postRef = collection(db, "posts")
-    const commentsRef = collection(db, "comments")
+    const commentsRef = collection(db, "commentsCollection")
     const categoryRef = collection(db, "categoryId")
+    const categoriesRef = doc(db, "categories", `${categoriesID}`)
 
     const postContainer = useRef<HTMLDivElement | null>(null)
     const titleRef = useRef<HTMLInputElement | null>(null)
     const [allowedFiles, setAllowedFiles] = useState<string>("")
     const [submitStatus, setSubmitStatus] = useState<boolean>(false)
 
-    const categoriesID = process.env.REACT_APP_CATEGORIES_ID
 
     const time = new Date().valueOf()
 
@@ -55,7 +57,7 @@ function AddPost() {
     }
 
     const createCategoryRef = async (categoryName: string, postId: string) => {
-        const cg = categoriesRef.map(d => d)
+        const cg = getCategories.map(d => d)
         const postCreateId = await addDoc(categoryRef, {
             [categoryName]: {
                 createdAt: time,
@@ -64,7 +66,7 @@ function AddPost() {
                 posts: [postId]
             }
         })
-        cg.map(data => updateDoc(doc(db, "categories", `${categoriesID}`), {
+        cg.map(data => updateDoc(categoriesRef, {
             categories: {
                 ...data.categories,
                 [categoryName]: postCreateId.id
@@ -74,10 +76,10 @@ function AddPost() {
         return postCreateId.id
     }
 
-    const updateCategory = async (categoryName: string, postId: string) => {
-        const post = getCategory && getCategory[categoryName]
-        await updateDoc(doc(db, "categoryId", categoriesRef[0].categories[categoryName]), {
-            [categoryName]: {
+    const updateCategory = async (postId: string) => {
+        const post = getCategory && getCategory[values.selectedCategory]
+        await updateDoc(doc(db, "categoryId", getCategories[0].categories[values.selectedCategory]), {
+            [values.selectedCategory]: {
                 ...post,
                 posts: [...post.posts, postId]
             }
@@ -120,7 +122,7 @@ function AddPost() {
             if (values.selectedCategory === "Other") {
                 await createCategoryRef(values.newCategory, postId)
             } else {
-                await updateCategory(values.selectedCategory, postId)
+                await updateCategory(postId)
             }
             setSubmitStatus(false)
             dispatch(setIsOpen(false))
@@ -128,8 +130,8 @@ function AddPost() {
     })
 
     useEffect(() => {
-        dispatch(handleUserSign())
-        handleCategory(categoriesRef[0].categories[values.selectedCategory])
+        // dispatch(handleUserSign())
+        dispatch(handleCategory(getCategories[0].categories[values.selectedCategory]))
         const handleOutsideClick = (event: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpen(false));
@@ -146,6 +148,7 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
+        
     }, [isOpen, dispatch, values.selectedCategory]);
 
     return (
@@ -169,8 +172,8 @@ function AddPost() {
                         required
                     >
                         <option value="">Select Category</option>
-                        {categoriesRef && Object.keys(categoriesRef[0].categories).map(data =>
-                            <option key={categoriesRef[0].categories[data]} value={data} >{data}</option>
+                        {getCategories && Object.keys(getCategories[0].categories).map(data =>
+                            <option key={getCategories[0].categories[data]} value={data} >{data}</option>
                         )}
                         <option value="Other">Other</option>
                     </select>
