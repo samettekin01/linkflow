@@ -13,7 +13,7 @@ function TopicsCard() {
         <div className={Styles.topicsContainer}>
             <div className={Styles.topicTitle}><h1>Topics</h1></div>
             {categories.length > 0 ?
-                Object.keys(categories[0].categories).map(data =>
+                Object.keys(categories[0].categories).sort().map(data =>
                     <div
                         key={categories[0].categories[data]}
                         className={Styles.topics}

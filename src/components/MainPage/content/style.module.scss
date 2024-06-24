@@ -25,3 +25,67 @@
 .topicsContainer {
     width: 23%;
 }
+
+.linkCardContainer {
+    position: relative;
+}
+
+.postMenuContainer {
+    position: relative;
+}
+
+.postMenuButton {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 10px;
+    top: 15px;
+    font-size: 15px;
+    padding: 5px;
+    clip-path: circle();
+    border: none;
+    background-color: $background1;
+    color: $fcolor1;
+    cursor: pointer;
+    transition: $transitionTime;
+    z-index: 1;
+}
+
+.postMenuButton:hover {
+    background-color: $background3;
+    color: $fcolor2;
+}
+
+.postMenuList {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    right: 25px;
+    top: 40px;
+    gap: 5px;
+    background-color: $background1;
+    padding: 10px;
+    box-shadow: $bscolor ;
+    border-radius: $radius10;
+}
+
+.postMenuList>button {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 7px 10px;
+    width: 150px;
+    border: none;
+    border-radius: $radius10;
+    background-color: $background1;
+    color: $fcolor1;
+    font-size: 16px;
+    cursor: pointer;
+    transition: $transitionTime;
+}
+
+.postMenuList>button:hover {
+    background-color: $background2;
+    color: $fcolor2;
+}

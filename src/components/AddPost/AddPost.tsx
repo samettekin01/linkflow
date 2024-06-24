@@ -46,7 +46,8 @@ function AddPost() {
         img: null
     }
     const createPostRef = async (post: object) => {
-        const postId = await addDoc(postRef, post)
+        const postId = await addDoc(postRef, {})
+        await updateDoc(doc(db, "posts", postId.id), { ...post, postID: postId.id })
         userDataRef && updateDoc(doc(db, "users", `${user?.uid}`), { posts: [...userDataRef.posts, postId.id] })
         return postId.id
     }
@@ -73,6 +74,7 @@ function AddPost() {
             }
         }
         ))
+        updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
         return postCreateId.id
     }
 
@@ -109,10 +111,11 @@ function AddPost() {
                 createdBy: user?.uid,
                 createdName: user?.displayName,
                 userImg: user?.photoURL,
+                createdAt: time,
+                category: category,
+                categoryId: getCategories[0].categories[values.selectedCategory] || "",
                 content: {
-                    createdAt: time,
                     title: values.title,
-                    category: category,
                     link: values.link,
                     description: values.description,
                     img: getURL
@@ -130,14 +133,13 @@ function AddPost() {
     })
 
     useEffect(() => {
-        // dispatch(handleUserSign())
         dispatch(handleCategory(getCategories[0].categories[values.selectedCategory]))
+        user && dispatch(getUserData(user?.uid))
         const handleOutsideClick = (event: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpen(false));
             }
         };
-        user && dispatch(getUserData(user?.uid))
         if (isOpen) {
             document.body.style.overflow = 'hidden';
             document.addEventListener('mousedown', handleOutsideClick);
@@ -148,7 +150,6 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
-        
     }, [isOpen, dispatch, values.selectedCategory]);
 
     return (
@@ -172,7 +173,7 @@ function AddPost() {
                         required
                     >
                         <option value="">Select Category</option>
-                        {getCategories && Object.keys(getCategories[0].categories).map(data =>
+                        {getCategories && Object.keys(getCategories[0].categories).sort().map(data =>
                             <option key={getCategories[0].categories[data]} value={data} >{data}</option>
                         )}
                         <option value="Other">Other</option>

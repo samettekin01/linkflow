@@ -15,7 +15,6 @@ function PostCard() {
     const getPost = useAppSelector(state => state.content.currentPost)
     const comment = useAppSelector(state => state.content.comment)
     const commentCollection = useAppSelector(state => state.content.commentsCollection)
-    // const commentCollectionStatus = useAppSelector(state => state.content.commentsCollectionStatus)
 
     const [commentText, setCommentText] = useState<string>("")
     const [commentStatus, setCommentStatus] = useState<boolean>(false)
@@ -36,7 +35,9 @@ function PostCard() {
         if (user) {
             if (comment) {
                 if (commentText) {
-                    const comment = await addDoc(collection(db, "comments"), {
+                    const commentDoc = await addDoc(collection(db, "comments"), {
+                        commentID: "",
+                        createdAt: time || "",
                         comment: {
                             commentsCollectionID: getPost?.commentsId || "",
                             postId: getPost?.postID || "",
@@ -44,13 +45,13 @@ function PostCard() {
                             username: user?.displayName || "",
                             userImg: user?.photoURL || "",
                             content: commentText || "",
-                            createdAt: time || "",
                             updatedAt: 0 || "",
                             replies: {}
                         }
                     })
+                    await updateDoc(doc(db, "comments", commentDoc.id), { commentID: commentDoc.id })
                     await updateDoc(doc(db, "commentsCollection", `${getPost?.commentsId}`), {
-                        [comment.id]: getPost?.commentsId
+                        [commentDoc.id]: getPost?.commentsId
                     })
                     getPost && dispatch(handleCommentsCollection(getPost?.commentsId))
                     setCommentText("")
@@ -61,7 +62,7 @@ function PostCard() {
     }
 
     useEffect(() => {
-        if (getPost) dispatch(handleCommentsCollection(getPost?.commentsId))
+        getPost && dispatch(handleCommentsCollection(getPost?.commentsId))
         const handleOutsideClick = (event: MouseEvent) => {
             if (getPostContainer.current && !getPostContainer.current.contains(event.target as Node)) {
                 dispatch(setIsPostOpen(false));
@@ -88,7 +89,7 @@ function PostCard() {
                         />
                         <p>{getPost?.createdName}</p>
                         <p>.</p>
-                        <p> {formatUnixTimeStamp(getPost?.content.createdAt)}</p>
+                        <p> {formatUnixTimeStamp(getPost?.createdAt)}</p>
                     </div>
                     <h2>{getPost?.content.title}</h2>
                     <img
@@ -103,7 +104,7 @@ function PostCard() {
                 <div className={Styles.postCommentsContainer}>
                     <div className={Styles.postComments}>
                         {commentCollection ? commentCollection.map((data: CommentData) =>
-                            <div key={data.dataKey} className={Styles.userCommentContainer}>
+                            <div key={data.commentID} className={Styles.userCommentContainer}>
                                 <div className={Styles.userProfileDiv}>
                                     <img
                                         className={Styles.commentsUserProfile}
@@ -112,7 +113,7 @@ function PostCard() {
                                     />
                                     <p>{data.comment.username}</p>
                                     <p>.</p>
-                                    <p> {new Date(data.comment.createdAt).toLocaleDateString()}</p>
+                                    <p> {new Date(data.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <p>{data.comment.content}</p>
                             </div>) : ""}

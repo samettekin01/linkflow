@@ -17,7 +17,7 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
                     />
                     <p>{data.createdName}</p>
                     <p>.</p>
-                    <p> {formatUnixTimeStamp(data.content.createdAt)}</p>
+                    <p> {formatUnixTimeStamp(data.createdAt)}</p>
                 </div>
                 <div className={Styles.linkCardContent}>
                     <div

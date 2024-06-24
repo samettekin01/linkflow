@@ -94,8 +94,8 @@ export interface PostData {
     createdName: string,
     userImg: string,
     postID: string,
+    createdAt: number,
     content: {
-        createdAt: number,
         title: string,
         category: string,
         link: string,
@@ -109,7 +109,8 @@ export interface PostState {
 }
 
 export interface CommentData {
-    dataKey: string
+    commentID: string
+    createdAt: number
     comment: {
         commentId: string
         postId: string
@@ -117,7 +118,6 @@ export interface CommentData {
         username: string
         userImg: string
         content: string
-        createdAt: number
         updatedAt: number
         replies: {}
     }
