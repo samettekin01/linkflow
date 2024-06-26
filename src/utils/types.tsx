@@ -2,7 +2,7 @@ import { DocumentData } from "firebase/firestore"
 
 export interface PostState {
     createdById: string
-    commentsId: string
+    commentsCollectionId: string
     createdBy: string
     content: {
         createdAt: number
@@ -40,7 +40,7 @@ export interface UserInformations {
     uid: string
     photoURL: string
     createdAt: number
-    posts: []
+    // posts: []
     comments: { [key: string]: string }
 }
 
@@ -59,7 +59,7 @@ export interface ContentSliceTypes {
     commentsCollectionStatus: string
     user: Array<DocumentData>
     userStatus: string
-    post: Array<DocumentData>
+    post: DocumentData | undefined
     postStatus: string
     content: DocumentData | undefined
     contentStatus: string
@@ -71,6 +71,8 @@ export interface ContentSliceTypes {
 export interface IsOpen {
     post: boolean
     getPost: boolean
+    getPostMenu: { [key: string]: boolean }
+    getEditPost: boolean
 }
 
 export interface UserInitialState {
@@ -89,15 +91,15 @@ export interface CategoriesTypes {
 
 
 export interface PostData {
-    commentsId: string,
+    commentsCollectionId: string,
     createdBy: string,
     createdName: string,
     userImg: string,
     postID: string,
     createdAt: number,
+    category: string,
     content: {
         title: string,
-        category: string,
         link: string,
         description: string,
         img: string
@@ -112,7 +114,7 @@ export interface CommentData {
     commentID: string
     createdAt: number
     comment: {
-        commentId: string
+        commentsCollectionID: string
         postId: string
         userId: string
         username: string

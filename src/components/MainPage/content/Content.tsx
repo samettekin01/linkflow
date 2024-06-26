@@ -1,70 +1,56 @@
-import ShareCard from "../body/ShareCard/ShareCard"
-import TopicsCard from "../body/TopicsCard/TopicsCard"
-import LinkCard from "../body/linkCard/LinkCard"
-import Styles from "./style.module.scss"
 import { useAppDispatch, useAppSelector } from "../../redux/store/store"
-import { setIsPostOpen } from "../../redux/slice/stateSlice"
+import { setIsMenuOpen, setIsOpenEditPost, setIsOpenPost } from "../../redux/slice/stateSlice"
 import { handleComment, setContent, setCurrentPost } from "../../redux/slice/contentSlice"
-import { BsFillTrash3Fill, BsPencil, BsThreeDotsVertical } from "react-icons/bs"
+import { BsThreeDotsVertical } from "react-icons/bs"
+import PostUtilsMenu from "../../PostUtilsMenu/PostUtilsMenu"
 import { DocumentData, deleteDoc, doc } from "firebase/firestore"
 import { db, storage } from "../../../firebase/firebase"
-import { useEffect, useRef, useState } from "react"
 import { deleteObject, ref } from "firebase/storage"
+import ShareCard from "../body/ShareCard/ShareCard"
+import TopicsCard from "../body/TopicsCard/TopicsCard"
+import LinkCard from "../body/LinkCard/LinkCard"
+import Styles from "./style.module.scss"
 
 function Content() {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user.user)
     const content = useAppSelector(state => state.content.content)
     const comments = useAppSelector(state => state.content.comment)
-    const listMenuRef = useRef<HTMLDivElement | null>(null)
-    const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
 
     const handlePost = (data: any) => {
-        dispatch(setIsPostOpen(true))
+        dispatch(setIsOpenPost(true))
         dispatch(setCurrentPost(data))
     }
 
-    const postEdit = (id: DocumentData) => {
-        dispatch(setContent(id.categoryId))
-        console.log(comments)
-        setIsOpenMenu(isOpenMenu => !isOpenMenu)
+    const postEdit = (data: any) => {
+        dispatch(setCurrentPost(data))
+        dispatch(setIsOpenEditPost(true))
+        dispatch(setIsMenuOpen({ [`${data}`]: false }))
     }
 
-    const postDelete = (id: DocumentData) => {
+    const toggleMenu = (postID: string) => {
+        dispatch(setIsMenuOpen({[postID]: true}));
+    };
+
+    const postDelete = (d: DocumentData) => {
         if (window.confirm("Are you sure you want to delete this post")) {
+            dispatch(setIsMenuOpen({ [d.postID]: false }))
             if (comments) {
-                deleteDoc(doc(db, "posts", id.postID))
+                deleteDoc(doc(db, "posts", d.postID))
                     .then(() =>
-                        deleteDoc(doc(db, "commentsCollection", id.commentsId))
+                        deleteDoc(doc(db, "commentsCollection", d.commentsCollectionId))
                             .then(() => {
                                 comments.forEach((data: string) => {
                                     deleteDoc(doc(db, "comments", data)).then(() => {
-                                        
                                         console.log("Post ve commets deleted successfully")
                                     })
                                 })
                             }).catch(e => console.log("Error deleting file: ", e))).catch(e => console.log("Error deleting post: ", e))
-                deleteObject(ref(storage, `photos/${id.commentsId}`)).then(() => console.log("File deleted successfully")).catch(e => console.log("Error deleting file: ", e))
-                dispatch(setContent(id.categoryId))
-                setIsOpenMenu(isOpenMenu => !isOpenMenu)
+                deleteObject(ref(storage, `photos/${d.commentsCollectionId}`)).then(() => console.log("File deleted successfully")).catch(e => console.log("Error deleting file: ", e))
+                dispatch(setContent(d.categoryId))
             }
         }
     }
-
-    useEffect(() => {
-        const handleOutsideClick = (event: MouseEvent) => {
-            if (listMenuRef.current && !listMenuRef.current.contains(event.target as Node)) {
-                setIsOpenMenu(false);
-            }
-        };
-        if (isOpenMenu) {
-            document.body.style.overflow = 'hidden';
-            document.addEventListener('mousedown', handleOutsideClick);
-        } else {
-            document.body.style.overflow = '';
-            document.removeEventListener('mousedown', handleOutsideClick);
-        }
-    }, [isOpenMenu])
 
     return (
         <div className={Styles.body}>
@@ -72,24 +58,24 @@ function Content() {
                 {user ? <ShareCard /> : ""}
                 <div className={Styles.contentContainer}>
                     {
-                        content ? content.map((d: any) =>
+                        content ? content.map((d: DocumentData) =>
                             <div key={d.postID} className={Styles.linkCardContainer}>
                                 {d.createdBy === user?.uid &&
                                     <div className={Styles.postMenuContainer}>
                                         <button
                                             onClick={() => {
-                                                dispatch(handleComment(d.commentsId))
-                                                setIsOpenMenu(isOpenMenu => !isOpenMenu)
+                                                dispatch(handleComment(d.commentsCollectionId))
+                                                toggleMenu(d.postID)
                                             }}
                                             className={Styles.postMenuButton}
                                         >
                                             <BsThreeDotsVertical />
                                         </button>
-                                        {isOpenMenu &&
-                                            <div className={Styles.postMenuList} ref={listMenuRef}>
-                                                <button onClick={() => postEdit(d)}>Düzenle <BsPencil /></button>
-                                                <button onClick={() => postDelete(d)}>Sil <BsFillTrash3Fill /></button>
-                                            </div>}
+                                        <PostUtilsMenu
+                                            handleEdit={postEdit}
+                                            handleDelete={postDelete}
+                                            post={d}
+                                        />
                                     </div>}
                                 <LinkCard data={d} onClick={handlePost} />
                             </div>)

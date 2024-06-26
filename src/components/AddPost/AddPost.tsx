@@ -1,12 +1,10 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setIsOpen } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { getUserData } from "../redux/slice/userSlice";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
-import { handleCategory } from "../redux/slice/categoriesSlice";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import Styles from "./style.module.scss"
@@ -17,9 +15,7 @@ function AddPost() {
 
     const user = useAppSelector(state => state.user.user)
     const getCategories = useAppSelector(state => state.categories.categories)
-    const getCategory = useAppSelector(state => state.categories.category)
     const isOpen = useAppSelector(state => state.post.post)
-    const userDataRef = useAppSelector(state => state.user.userData)
 
     const categoriesID = process.env.REACT_APP_CATEGORIES_ID
 
@@ -48,7 +44,6 @@ function AddPost() {
     const createPostRef = async (post: object) => {
         const postId = await addDoc(postRef, {})
         await updateDoc(doc(db, "posts", postId.id), { ...post, postID: postId.id })
-        userDataRef && updateDoc(doc(db, "users", `${user?.uid}`), { posts: [...userDataRef.posts, postId.id] })
         return postId.id
     }
 
@@ -64,7 +59,6 @@ function AddPost() {
                 createdAt: time,
                 createdBy: user?.uid,
                 createdName: user?.displayName,
-                posts: [postId]
             }
         })
         cg.map(data => updateDoc(categoriesRef, {
@@ -76,16 +70,6 @@ function AddPost() {
         ))
         updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
         return postCreateId.id
-    }
-
-    const updateCategory = async (postId: string) => {
-        const post = getCategory && getCategory[values.selectedCategory]
-        await updateDoc(doc(db, "categoryId", getCategories[0].categories[values.selectedCategory]), {
-            [values.selectedCategory]: {
-                ...post,
-                posts: [...post.posts, postId]
-            }
-        });
     }
 
     const dowloadURL = async (postId: string) => {
@@ -103,11 +87,11 @@ function AddPost() {
         initialValues,
         onSubmit: async (values) => {
             setSubmitStatus(true)
-            const commentsId = await createCommentRef()
-            const getURL = await dowloadURL(commentsId)
+            const commentsCollectionId= await createCommentRef()
+            const getURL = await dowloadURL(commentsCollectionId)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const content = {
-                commentsId: commentsId,
+                commentsCollectionId: commentsCollectionId,
                 createdBy: user?.uid,
                 createdName: user?.displayName,
                 userImg: user?.photoURL,
@@ -124,8 +108,6 @@ function AddPost() {
             const postId = await createPostRef(content);
             if (values.selectedCategory === "Other") {
                 await createCategoryRef(values.newCategory, postId)
-            } else {
-                await updateCategory(postId)
             }
             setSubmitStatus(false)
             dispatch(setIsOpen(false))
@@ -133,8 +115,6 @@ function AddPost() {
     })
 
     useEffect(() => {
-        dispatch(handleCategory(getCategories[0].categories[values.selectedCategory]))
-        user && dispatch(getUserData(user?.uid))
         const handleOutsideClick = (event: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpen(false));
@@ -150,7 +130,7 @@ function AddPost() {
         if (titleRef.current) {
             titleRef.current.focus();
         }
-    }, [isOpen, dispatch, values.selectedCategory]);
+    }, [isOpen, dispatch]);
 
     return (
         <div className={Styles.postScreenContainer}>
@@ -196,7 +176,7 @@ function AddPost() {
                     />
                     <textarea
                         name="description"
-                        placeholder="AddDescription"
+                        placeholder="Add Description"
                         className={Styles.postInputDescription}
                         value={values.description}
                         rows={5}

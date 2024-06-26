@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import { setIsPostOpen } from "../redux/slice/stateSlice";
+import { setIsOpenPost } from "../redux/slice/stateSlice";
 import { BsArrowUpCircleFill, BsX } from "react-icons/bs";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
@@ -10,6 +10,7 @@ import { CommentData } from "../../utils/types";
 
 function PostCard() {
     const getPostContainer = useRef<HTMLDivElement | null>(null)
+
     const user = useAppSelector(state => state.user.user)
     const isOpen = useAppSelector(state => state.post.getPost)
     const getPost = useAppSelector(state => state.content.currentPost)
@@ -39,7 +40,7 @@ function PostCard() {
                         commentID: "",
                         createdAt: time || "",
                         comment: {
-                            commentsCollectionID: getPost?.commentsId || "",
+                            commentsCollectionID: getPost?.commentsCollectionId || "",
                             postId: getPost?.postID || "",
                             userId: user?.uid || "",
                             username: user?.displayName || "",
@@ -50,10 +51,10 @@ function PostCard() {
                         }
                     })
                     await updateDoc(doc(db, "comments", commentDoc.id), { commentID: commentDoc.id })
-                    await updateDoc(doc(db, "commentsCollection", `${getPost?.commentsId}`), {
-                        [commentDoc.id]: getPost?.commentsId
+                    await updateDoc(doc(db, "commentsCollection", `${getPost?.commentsCollectionId}`), {
+                        [commentDoc.id]: getPost?.commentsCollectionId
                     })
-                    getPost && dispatch(handleCommentsCollection(getPost?.commentsId))
+                    getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId))
                     setCommentText("")
                     setCommentStatus(false)
                 }
@@ -62,10 +63,10 @@ function PostCard() {
     }
 
     useEffect(() => {
-        getPost && dispatch(handleCommentsCollection(getPost?.commentsId))
+        getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId))
         const handleOutsideClick = (event: MouseEvent) => {
             if (getPostContainer.current && !getPostContainer.current.contains(event.target as Node)) {
-                dispatch(setIsPostOpen(false));
+                dispatch(setIsOpenPost(false));
             }
         };
         if (isOpen) {
@@ -80,7 +81,7 @@ function PostCard() {
         <div className={Styles.PostCardContainer}>
             <div className={Styles.postContentContainer} ref={getPostContainer}>
                 <div className={Styles.postScrenn} >
-                    <BsX className={Styles.exitButton} onClick={() => dispatch(setIsPostOpen(false))} />
+                    <BsX className={Styles.exitButton} onClick={() => dispatch(setIsOpenPost(false))} />
                     <div className={Styles.linkProfileDiv}>
                         <img
                             className={Styles.linkProfile}
@@ -102,7 +103,7 @@ function PostCard() {
                     </div>
                 </div>
                 <div className={Styles.postCommentsContainer}>
-                    <div className={Styles.postComments}>
+                    <div className={Styles.postComments} >
                         {commentCollection ? commentCollection.map((data: CommentData) =>
                             <div key={data.commentID} className={Styles.userCommentContainer}>
                                 <div className={Styles.userProfileDiv}>
