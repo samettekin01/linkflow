@@ -56,36 +56,3 @@
     background-color: $background3;
     color: $fcolor2;
 }
-
-.postMenuList {
-    position: absolute;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    right: 25px;
-    top: 40px;
-    gap: 5px;
-    background-color: $background1;
-    padding: 10px;
-    box-shadow: $bscolor ;
-    border-radius: $radius10;
-}
-
-.postMenuList>button {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 7px 10px;
-    width: 150px;
-    border: none;
-    border-radius: $radius10;
-    background-color: $background1;
-    color: $fcolor1;
-    font-size: 16px;
-    cursor: pointer;
-    transition: $transitionTime;
-}
-
-.postMenuList>button:hover {
-    background-color: $background2;
-    color: $fcolor2;
-}

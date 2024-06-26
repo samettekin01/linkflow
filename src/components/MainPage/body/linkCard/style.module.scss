@@ -20,10 +20,12 @@
 
 .linkProfileDiv>p:nth-child(2) {
     font-weight: bold;
+    color: $fcolor1;
 }
 
 .linkProfileDiv>p:nth-child(3) {
     margin: 0 5px 5px 5px;
+    color: $fcolor1;
 }
 
 .linkProfile {
@@ -50,11 +52,12 @@
     width: 100%;
 }
 
-.cardContent>p {
+.cardContent>* {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    color: $fcolor1;
 }
