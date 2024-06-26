@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { useEffect } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
+import { setIsOpen } from "../../redux/slice/stateSlice";
 
 const Menu: React.FC = () => {
     const user = useAppSelector(state => state.user.user)
@@ -50,7 +51,7 @@ const Menu: React.FC = () => {
                         <p>Home</p>
                     </div>
                     <div className={Styles.add}>
-                        <BsPlusCircleFill className={Styles.utilsIcon} />
+                        <BsPlusCircleFill className={Styles.utilsIcon} onClick={() => dispatch(setIsOpen(true))} />
                         Add
                     </div>
                     <div className={Styles.profile} onClick={login}>
