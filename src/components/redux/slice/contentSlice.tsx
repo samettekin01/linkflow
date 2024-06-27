@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { collection, doc, getDoc, getDocs, limit, query, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore"
 import { ContentSliceTypes, PostData, PostState } from "../../../utils/types"
 import { db } from "../../../firebase/firebase"
 
@@ -44,13 +44,33 @@ export const handleComment = createAsyncThunk("commentsCollection", async (id: s
 //     return post
 // })
 
-export const setContent = createAsyncThunk("content", async (id: string) => {
+export const setContent = createAsyncThunk("content", async (id: string | undefined) => {
     const getContent = (await getDocs(query(
         collection(db, "posts"),
         where("categoryId", "==", id),
         limit(10)
     ))).docs.map(d => d.data())
-    const sortPost = getContent.sort((a, b) => a.createdAt - b.createdAt)
+    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
+    return sortPost
+})
+
+export const setUserContent = createAsyncThunk("userContent", async (id: string | undefined) => {
+    const getContent = (await getDocs(query(
+        collection(db, "posts"),
+        where("createdBy", "==", id),
+        limit(10)
+    ))).docs.map(d => d.data())
+    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
+    return sortPost
+})
+
+export const recentContent = createAsyncThunk("recentContent", async () => {
+    const getContent = (await getDocs(query(
+        collection(db, "posts"),
+        orderBy("createdAt", "asc"),
+        limit(10)
+    ))).docs.map(d => d.data())
+    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
     return sortPost
 })
 
@@ -83,6 +103,26 @@ const contentSlice = createSlice({
         builder.addCase(setContent.rejected, state => {
             state.contentStatus = "rejected"
         })
+        builder.addCase(setUserContent.fulfilled, (state, action) => {
+            state.content = action.payload
+            state.contentStatus = "fulfilled"
+        })
+        builder.addCase(setUserContent.pending, state => {
+            state.contentStatus = "pending"
+        })
+        builder.addCase(setUserContent.rejected, state => {
+            state.contentStatus = "rejected"
+        })
+        builder.addCase(recentContent.fulfilled, (state, action) => {
+            state.content = action.payload
+            state.contentStatus = "fulfilled"
+        })
+        builder.addCase(recentContent.pending, state => {
+            state.contentStatus = "pending"
+        })
+        builder.addCase(recentContent.rejected, state => {
+            state.contentStatus = "rejected"
+        })
         builder.addCase(handleComment.fulfilled, (state, action) => {
             state.comment = action.payload
             state.commentStatus = "fulfilled"
@@ -93,16 +133,6 @@ const contentSlice = createSlice({
         builder.addCase(handleComment.rejected, state => {
             state.commentStatus = "rejected"
         })
-        // builder.addCase(handlePosts.fulfilled, (state, action) => {
-        //     state.post = action.payload
-        //     state.postStatus = "fulfilled"
-        // })
-        // builder.addCase(handlePosts.pending, state => {
-        //     state.postStatus = "pending"
-        // })
-        // builder.addCase(handlePosts.rejected, state => {
-        //     state.postStatus = "rejected"
-        // })
     }
 })
 

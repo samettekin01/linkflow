@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from './components/redux/store/store';
-import { handleCategories } from './components/redux/slice/categoriesSlice';
+import { useAppSelector } from './components/redux/store/store';
 import Content from './components/MainPage/Content/Content';
 import Menu from './components/MainPage/Menu/Menu';
 import AddPost from './components/AddPost/AddPost';
@@ -13,15 +12,13 @@ function App() {
   const getPostStatus = useAppSelector(state => state.post.getPost)
   const getEditPostStatus = useAppSelector(state => state.post.getEditPost)
 
-  const dispatch = useAppDispatch()
   useEffect(() => {
-    dispatch(handleCategories())
-    if (postStatus || getPostStatus) {
+    if (postStatus || getPostStatus || getEditPostStatus) {
       document.body.style.overflow = "hidden"
     } else {
       document.body.style.overflow = ""
     }
-  }, [postStatus, getPostStatus, dispatch])
+  }, [postStatus, getPostStatus, getEditPostStatus])
   return (
     <div className={Styles.container}>
       <Menu />

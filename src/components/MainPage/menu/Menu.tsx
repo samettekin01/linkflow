@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen } from "../../redux/slice/stateSlice";
+import { recentContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
 
 const Menu: React.FC = () => {
     const user = useAppSelector(state => state.user.user)
@@ -19,6 +20,9 @@ const Menu: React.FC = () => {
             } catch (error) {
                 console.log("Oturum açılırken bir hata oluştu: ", error)
             }
+        } else {
+            dispatch(setContent(""))
+            getUserContent(user.uid)
         }
     }
     const handleSignOut = async () => {
@@ -32,6 +36,10 @@ const Menu: React.FC = () => {
         }
     }
 
+    const getUserContent = (id: string | undefined) => {
+        id && dispatch(setUserContent(id))
+    }
+
     useEffect(() => {
         dispatch(handleUserSign())
     }, [dispatch])
@@ -39,14 +47,14 @@ const Menu: React.FC = () => {
     return (
         <div className={Styles.navBar}>
             <div className={Styles.navBarContainer}>
-                <div className={Styles.logoDiv}>
+                <div className={Styles.logoDiv} onClick={() => dispatch(recentContent())}>
                     <div className={Styles.logo}>LinkFlow</div>
                 </div>
                 <div className={Styles.searchDiv}>
                     <BsSearch className={Styles.searchButton} /><input className={Styles.searchInput} type="search" placeholder="Search" />
                 </div>
                 <div className={Styles.utils}>
-                    <div className={Styles.home}>
+                    <div className={Styles.home} onClick={() => dispatch(recentContent())}>
                         <BsHouseFill className={Styles.utilsIcon} />
                         <p>Home</p>
                     </div>

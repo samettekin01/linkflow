@@ -4,9 +4,9 @@ import { setIsOpenPost } from "../redux/slice/stateSlice";
 import { BsArrowUpCircleFill, BsX } from "react-icons/bs";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
-import Styles from "./style.module.scss"
 import { handleCommentsCollection } from "../redux/slice/contentSlice";
 import { CommentData } from "../../utils/types";
+import Styles from "./style.module.scss"
 
 function PostCard() {
     const getPostContainer = useRef<HTMLDivElement | null>(null)
@@ -91,6 +91,10 @@ function PostCard() {
                         <p>{getPost?.createdName}</p>
                         <p>.</p>
                         <p> {formatUnixTimeStamp(getPost?.createdAt)}</p>
+                        {getPost && getPost?.updatedAt > 0 && <div className={Styles.editPostDate}>
+                            <p>Edited: </p>
+                            <p>{formatUnixTimeStamp(getPost.updatedAt)}</p>
+                        </div>}
                     </div>
                     <h2>{getPost?.content.title}</h2>
                     <img

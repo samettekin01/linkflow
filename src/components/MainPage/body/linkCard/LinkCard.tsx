@@ -18,8 +18,13 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
                     <p>{data.createdName}</p>
                     <p>.</p>
                     <p> {formatUnixTimeStamp(data.createdAt)}</p>
+                    {data.updatedAt > 0 && <div className={Styles.editPostDate}>
+                        <p> Edited: </p>
+                        <p>{formatUnixTimeStamp(data.updatedAt)}</p>
+                    </div>}
                 </div>
                 <div className={Styles.linkCardContent}>
+                    <span className={Styles.categoryName}>{data.category}</span>
                     <div
                         className={Styles.linkCardImg}
                         style={{

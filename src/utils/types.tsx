@@ -71,8 +71,8 @@ export interface ContentSliceTypes {
 export interface IsOpen {
     post: boolean
     getPost: boolean
-    getPostMenu: { [key: string]: boolean }
     getEditPost: boolean
+    getPostMenu: { [key: string]: boolean }
 }
 
 export interface UserInitialState {
@@ -91,13 +91,15 @@ export interface CategoriesTypes {
 
 
 export interface PostData {
-    commentsCollectionId: string,
-    createdBy: string,
-    createdName: string,
-    userImg: string,
-    postID: string,
-    createdAt: number,
-    category: string,
+    commentsCollectionId: string
+    createdBy: string
+    createdName: string
+    userImg: string
+    postID: string
+    createdAt: number
+    updatedAt: number
+    category: string
+    categoryId: string
     content: {
         title: string,
         link: string,

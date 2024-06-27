@@ -1,6 +1,8 @@
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store"
 import { setContent } from "../../../redux/slice/contentSlice"
 import Styles from "./style.module.scss"
+import { useEffect } from "react"
+import { handleCategories } from "../../../redux/slice/categoriesSlice"
 
 function TopicsCard() {
     const categories = useAppSelector(state => state.categories.categories)
@@ -8,6 +10,10 @@ function TopicsCard() {
     const handleGetCategory = async (id: string) => {
         dispatch(setContent(id))
     }
+
+    useEffect(() => {
+        dispatch(handleCategories())
+    }, [dispatch])
     
     return (
         <div className={Styles.topicsContainer}>

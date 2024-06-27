@@ -8,6 +8,7 @@ import { PostFormikValues } from "../../utils/types";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import Styles from "./style.module.scss"
+import { recentContent } from "../redux/slice/contentSlice";
 
 
 function AddPost() {
@@ -69,6 +70,7 @@ function AddPost() {
         }
         ))
         updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
+        dispatch(recentContent())
         return postCreateId.id
     }
 
@@ -87,7 +89,7 @@ function AddPost() {
         initialValues,
         onSubmit: async (values) => {
             setSubmitStatus(true)
-            const commentsCollectionId= await createCommentRef()
+            const commentsCollectionId = await createCommentRef()
             const getURL = await dowloadURL(commentsCollectionId)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const content = {
@@ -96,6 +98,7 @@ function AddPost() {
                 createdName: user?.displayName,
                 userImg: user?.photoURL,
                 createdAt: time,
+                updateAt: 0,
                 category: category,
                 categoryId: getCategories[0].categories[values.selectedCategory] || "",
                 content: {
@@ -109,23 +112,24 @@ function AddPost() {
             if (values.selectedCategory === "Other") {
                 await createCategoryRef(values.newCategory, postId)
             }
+            dispatch(recentContent())
             setSubmitStatus(false)
             dispatch(setIsOpen(false))
         }
     })
 
     useEffect(() => {
-        const handleOutsideClick = (event: MouseEvent) => {
-            if (postContainer.current && !postContainer.current.contains(event.target as Node)) {
+        const handleOutsideClick = (e: MouseEvent) => {
+            if (postContainer.current && !postContainer.current.contains(e.target as Node)) {
                 dispatch(setIsOpen(false));
             }
         };
         if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            document.addEventListener('mousedown', handleOutsideClick);
+            document.body.style.overflow = "hidden";
+            document.addEventListener("mousedown", handleOutsideClick);
         } else {
-            document.body.style.overflow = '';
-            document.removeEventListener('mousedown', handleOutsideClick);
+            document.body.style.overflow = "";
+            document.removeEventListener("mousedown", handleOutsideClick);
         }
         if (titleRef.current) {
             titleRef.current.focus();
@@ -144,6 +148,7 @@ function AddPost() {
                         value={values.title}
                         onChange={handleChange}
                         ref={titleRef}
+                        maxLength={80}
                         required
                     />
                     <select
