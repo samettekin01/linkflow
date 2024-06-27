@@ -5,7 +5,7 @@ import PostUtilsMenu from "../../PostUtilsMenu/PostUtilsMenu"
 import { DocumentData } from "firebase/firestore"
 import ShareCard from "../body/ShareCard/ShareCard"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
-import LinkCard from "../body/LinkCard/LinkCard"
+import LinkCard from "../body/linkCard/LinkCard"
 import Styles from "./style.module.scss"
 import { useEffect } from "react"
 

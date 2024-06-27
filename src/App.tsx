@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppSelector } from './components/redux/store/store';
-import Content from './components/MainPage/Content/Content';
-import Menu from './components/MainPage/Menu/Menu';
+import Content from './components/MainPage/content/Content';
+import Menu from './components/MainPage/menu/Menu';
 import AddPost from './components/AddPost/AddPost';
 import PostCard from './components/PostCard/PostCard';
 import Styles from "./styles/style.module.scss"
