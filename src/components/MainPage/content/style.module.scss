@@ -34,25 +34,9 @@
     position: relative;
 }
 
-.postMenuButton {
+.utilsMenu {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     right: 10px;
     top: 15px;
-    font-size: 15px;
-    padding: 5px;
-    clip-path: circle();
-    border: none;
-    background-color: $background1;
-    color: $fcolor1;
-    cursor: pointer;
-    transition: $transitionTime;
     z-index: 1;
-}
-
-.postMenuButton:hover {
-    background-color: $background3;
-    color: $fcolor2;
 }

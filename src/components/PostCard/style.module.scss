@@ -6,7 +6,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100vh;
+    height: 100vw;
     background-color: $trBackground;
     z-index: 1;
 }
@@ -72,16 +72,25 @@
     position: absolute;
     right: 10px;
     top: 10px;
-    font-size: 35px;
+    font-size: 2rem;
     cursor: pointer;
     color: $fcolor2;
 }
 
 .linkProfileDiv {
+    position: relative;
     display: flex;
     align-items: center;
     border-bottom: 1px solid $fcolor2;
     padding-bottom: 5px;
+}
+
+.editPostDate {
+    position: absolute;
+    display: flex;
+    color: $fcolor2;
+    right: 0;
+    font-size: 0.7rem;
 }
 
 .linkProfileDiv>p:nth-child(2) {
@@ -133,6 +142,12 @@
     margin: 5px 0;
 }
 
+.utilsMenu{
+    position: absolute;
+    right: 40px;
+    top: 13px;
+}
+
 .commentsUserProfile {
     width: 25px;
     margin-right: 10px;
@@ -165,7 +180,7 @@
     padding: 5px;
 }
 
-.commentInput:focus-visible{
+.commentInput:focus-visible {
     color: $fcolor2;
 }
 
@@ -177,5 +192,5 @@
     background-color: transparent;
     color: $fcolor2;
     height: 100%;
-    font-size: 15px;
+    font-size: 1.3rem;
 }

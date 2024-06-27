@@ -6,7 +6,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     background-color: $trBackground;
     z-index: 1;
 }
@@ -31,7 +31,7 @@
 
 .exitButton{
     margin-left: auto;
-    font-size: 25px;
+    font-size: 1.7rem;
     cursor: pointer;
     color: $fcolor2;
 }

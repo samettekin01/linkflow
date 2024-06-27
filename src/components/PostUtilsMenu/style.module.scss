@@ -22,13 +22,31 @@
     border: none;
     border-radius: $radius10;
     background-color: $background1;
-    color: $fcolor1;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
     transition: $transitionTime;
 }
 
 .postMenuList>button:hover {
     background-color: $background2;
+    color: $fcolor2;
+}
+
+.postMenuButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    padding: 5px;
+    clip-path: circle();
+    border: none;
+    background-color: transparent;
+    color: $fcolor1;
+    cursor: pointer;
+    transition: $transitionTime;
+}
+
+.postMenuButton:hover {
+    background-color: $background3;
     color: $fcolor2;
 }

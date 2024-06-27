@@ -35,9 +35,18 @@
 }
 
 .linkCardContent {
+    position: relative;
     display: flex;
     flex-direction: row;
     gap: 5px;
+}
+
+.categoryName{
+    position: absolute;
+    right: 0;
+    top: -20px;
+    padding: 1px 8px;
+    background-color: $background1;
 }
 
 .linkCardImg {
@@ -59,5 +68,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    color: $fcolor1;
+}
+
+.editPostDate{
+    position: absolute;
+    display: flex;
+    right: 50px;
+    font-size: calc(0.7rem);
     color: $fcolor1;
 }
