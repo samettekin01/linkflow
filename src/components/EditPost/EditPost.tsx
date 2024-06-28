@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import Styles from "./style.module.scss";
 import { setUserContent } from "../redux/slice/contentSlice";
+import { isValidURL } from "../AddPost/AddPost";
 
 function EditPost() {
     const dispatch = useAppDispatch();
@@ -75,6 +76,7 @@ function EditPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
+            if(!isValidURL(values.link)) return alert("Invalid URL")
             setSubmitStatus(true)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)

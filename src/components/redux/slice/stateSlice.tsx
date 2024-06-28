@@ -5,7 +5,8 @@ const initialState: IsOpen = {
     post: false,
     getPost: false,
     getPostMenu: {},
-    getEditPost: false
+    getEditPost: false,
+    getComment: {}
 }
 
 const stateSlice = createSlice({
@@ -23,9 +24,12 @@ const stateSlice = createSlice({
         },
         setIsMenuOpen: (state, action) => {
             state.getPostMenu = action.payload
+        },
+        setIsOpenEditComment: (state, action) => {
+            state.getComment = action.payload
         }
     }
 })
 
-export const { setIsOpen, setIsOpenPost, setIsMenuOpen, setIsOpenEditPost } = stateSlice.actions
+export const { setIsOpen, setIsOpenPost, setIsMenuOpen, setIsOpenEditPost, setIsOpenEditComment } = stateSlice.actions
 export default stateSlice.reducer

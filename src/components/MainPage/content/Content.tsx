@@ -6,8 +6,8 @@ import { DocumentData } from "firebase/firestore"
 import ShareCard from "../body/ShareCard/ShareCard"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
 import LinkCard from "../body/linkCard/LinkCard"
-import Styles from "./style.module.scss"
 import { useEffect } from "react"
+import Styles from "./style.module.scss"
 
 function Content() {
     const dispatch = useAppDispatch()

@@ -73,6 +73,7 @@ export interface IsOpen {
     getPost: boolean
     getEditPost: boolean
     getPostMenu: { [key: string]: boolean }
+    getComment: { [key: string]: boolean }
 }
 
 export interface UserInitialState {
@@ -115,16 +116,14 @@ export interface PostState {
 export interface CommentData {
     commentID: string
     createdAt: number
-    comment: {
-        commentsCollectionID: string
-        postId: string
-        userId: string
-        username: string
-        userImg: string
-        content: string
-        updatedAt: number
-        replies: {}
-    }
+    commentsCollectionID: string
+    postId: string
+    userId: string
+    username: string
+    userImg: string
+    content: string
+    updatedAt: number
+    replies: {}
 }
 
 export interface Replies {

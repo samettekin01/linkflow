@@ -20,7 +20,8 @@ const initialState: ContentSliceTypes | PostState = {
 export const handleCommentsCollection = createAsyncThunk("comments", async (id: string) => {
     const getComments = (await getDocs(query(
         collection(db, "comments"),
-        where("comment.commentsCollectionID", "==", id),
+        where("commentsCollectionID", "==", id),
+        orderBy("__name__","desc"),
         limit(10)
     ))).docs.map(d => d.data())
     let sortComment = getComments.sort((a, b) => a.createdAt - b.createdAt)
@@ -38,11 +39,6 @@ export const handleComment = createAsyncThunk("commentsCollection", async (id: s
     }
     return getComment
 })
-
-// export const handlePosts = createAsyncThunk("posts", async (id: string) => {
-//     const post = (await getDoc(doc(db, "posts", id))).data()
-//     return post
-// })
 
 export const setContent = createAsyncThunk("content", async (id: string | undefined) => {
     const getContent = (await getDocs(query(

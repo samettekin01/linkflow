@@ -1,16 +1,20 @@
-import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsSearch, BsBoxArrowLeft } from "react-icons/bs";
+import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsSearch, BsBoxArrowLeft, BsList } from "react-icons/bs";
 import { auth, googleProvider } from "../../../firebase/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen } from "../../redux/slice/stateSlice";
 import { recentContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
+import TopicsCard from "../body/TopicsCard/TopicsCard";
+import Logo from "../../../styles/Logo";
 
 const Menu: React.FC = () => {
     const user = useAppSelector(state => state.user.user)
     const dispatch = useAppDispatch()
+
+    const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
 
     const login = async () => {
         if (!user) {
@@ -46,8 +50,15 @@ const Menu: React.FC = () => {
 
     return (
         <div className={Styles.navBar}>
+            <div className={Styles.topicMenuContainer} onClick={() => setIsOpenMenu(!isOpenMenu)}>
+                <BsList className={Styles.topicsMenuButton} />
+                {isOpenMenu && <div className={Styles.topicMenu}>
+                    <TopicsCard />
+                </div>}
+            </div>
             <div className={Styles.navBarContainer}>
                 <div className={Styles.logoDiv} onClick={() => dispatch(recentContent())}>
+                    <Logo />
                     <div className={Styles.logo}>LinkFlow</div>
                 </div>
                 <div className={Styles.searchDiv}>
@@ -58,13 +69,13 @@ const Menu: React.FC = () => {
                         <BsHouseFill className={Styles.utilsIcon} />
                         <p>Home</p>
                     </div>
-                    <div className={Styles.add}>
+                    {user && <div className={Styles.add}>
                         <BsPlusCircleFill className={Styles.utilsIcon} onClick={() => dispatch(setIsOpen(true))} />
                         Add
-                    </div>
+                    </div>}
                     <div className={Styles.profile} onClick={login}>
                         {user == null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
-                        {user ? user.displayName.split(" ")[0] : "Profile"}
+                        {user ? user.displayName.split(" ")[0] : "Log in"}
                     </div>
                     {user &&
                         <div className={Styles.profile} onClick={handleSignOut}>

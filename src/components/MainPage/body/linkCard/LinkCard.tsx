@@ -15,9 +15,10 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
                         src={data.userImg}
                         alt={data.title}
                     />
-                    <p>{data.createdName}</p>
-                    <p>.</p>
-                    <p> {formatUnixTimeStamp(data.createdAt)}</p>
+                    <div className={Styles.userInfo}>
+                        <p>{data.createdName}</p>
+                        <p> {formatUnixTimeStamp(data.createdAt)}</p>
+                    </div>
                     {data.updatedAt > 0 && <div className={Styles.editPostDate}>
                         <p> Edited: </p>
                         <p>{formatUnixTimeStamp(data.updatedAt)}</p>

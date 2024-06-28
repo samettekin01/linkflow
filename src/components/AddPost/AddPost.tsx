@@ -11,6 +11,11 @@ import Styles from "./style.module.scss"
 import { recentContent } from "../redux/slice/contentSlice";
 
 
+export const isValidURL = (url: string) => {
+    const regex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/;
+    return regex.test(url);
+};
+
 function AddPost() {
     const dispatch = useAppDispatch();
 
@@ -88,6 +93,7 @@ function AddPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
+            if(!isValidURL(values.link)) return alert("Invalid URL")
             setSubmitStatus(true)
             const commentsCollectionId = await createCommentRef()
             const getURL = await dowloadURL(commentsCollectionId)
@@ -169,6 +175,7 @@ function AddPost() {
                         placeholder="Add Category"
                         onChange={handleChange}
                         value={values.newCategory}
+                        maxLength={15}
                         required
                     />}
                     <input

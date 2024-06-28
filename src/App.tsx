@@ -6,6 +6,7 @@ import AddPost from './components/AddPost/AddPost';
 import PostCard from './components/PostCard/PostCard';
 import Styles from "./styles/style.module.scss"
 import EditPost from './components/EditPost/EditPost';
+import BottomMenu from './components/MainPage/menu/BottomMenu/BottomMenu';
 
 function App() {
   const postStatus = useAppSelector(state => state.post.post)
@@ -22,12 +23,11 @@ function App() {
   return (
     <div className={Styles.container}>
       <Menu />
-      <div>
-        <Content />
-      </div>
+      <Content />
       {postStatus && <AddPost />}
       {getPostStatus && <PostCard />}
       {getEditPostStatus && <EditPost />}
+      <BottomMenu />
     </div>
   );
 }
