@@ -99,3 +99,9 @@
     color: $fcolor2;
     padding: $padding10;
 }
+
+@media (max-width: 600px){
+    .editPostScrenn{
+        width: 80%;
+    }
+}

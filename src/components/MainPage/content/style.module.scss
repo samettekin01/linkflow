@@ -5,7 +5,8 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding-top: $cardGapC;
+    height: 100%;
+    margin-top: 85px;
 }
 
 .bodyContainer {
@@ -20,6 +21,7 @@
 .contentContainer {
     display: grid;
     row-gap: $cardGapR;
+    min-width: 300px;
 }
 
 .topicsContainer {
@@ -39,4 +41,21 @@
     right: 10px;
     top: 15px;
     z-index: 1;
+}
+
+@media (max-width: 850px) {
+    .topicsContainer{
+        display: none;
+    }
+    .bodyContainer{
+        width: 100%;
+        margin: 0 20px;
+    }
+}
+
+@media (max-width: 380px){
+    .bodyContainer{
+        width: 100%;
+        margin: 0 5px;
+    }
 }

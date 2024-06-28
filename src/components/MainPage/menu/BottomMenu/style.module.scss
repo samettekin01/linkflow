@@ -1,0 +1,66 @@
+@import "../../../../styles/variable.scss";
+
+.utilsBottom {
+    display: none;
+    z-index: 1;
+}
+
+.utilsPosition {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: $font12;
+    color: $fcolor3;
+    transition: $transitionTime;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.utilsIcon {
+    font-size: 1.7rem;
+}
+
+.home {
+    @extend .utilsPosition;
+    font-size: $font12;
+}
+
+.add {
+    @extend .utilsPosition;
+    font-size: $font12;
+}
+
+.profile {
+    @extend .utilsPosition;
+    font-size: $font12;
+}
+
+.profile>p {
+    text-wrap: nowrap;
+}
+
+.profile:hover,
+.add:hover,
+.home:hover {
+    color: $background2;
+}
+
+.profileStyle {
+    width: 27px;
+    clip-path: circle(50%);
+}
+
+@media (max-width: 545px) {
+    .utilsBottom {
+        display: flex;
+        position: fixed;
+        justify-content: space-around;
+        flex-direction: row;
+        bottom: 0;
+        padding: 10px;
+        width: 100%;
+        background-color: $background1;
+    }
+
+}

@@ -18,14 +18,16 @@
     padding-bottom: 5px;
 }
 
-.linkProfileDiv>p:nth-child(2) {
+.userInfo>p:nth-child(1) {
     font-weight: bold;
     color: $fcolor1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.linkProfileDiv>p:nth-child(3) {
-    margin: 0 5px 5px 5px;
+.userInfo>p:nth-child(2) {
     color: $fcolor1;
+    font-size: .7rem;
 }
 
 .linkProfile {
@@ -73,7 +75,6 @@
 
 .editPostDate{
     position: absolute;
-    display: flex;
     right: 50px;
     font-size: calc(0.7rem);
     color: $fcolor1;

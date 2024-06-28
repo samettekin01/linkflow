@@ -3,7 +3,10 @@
 /* NavBar Styles */
 
 .navBar {
-    position: sticky;
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     top: 0;
     width: 100%;
     height: $menuHeight;
@@ -11,7 +14,7 @@
     z-index: 1;
 }
 
-.navBarContainer{
+.navBarContainer {
     display: flex;
     position: absolute;
     left: $leftPosition;
@@ -48,7 +51,9 @@
     display: flex;
     align-items: center;
     height: $menuHeight;
+    margin: 0 5px;
     width: 350px;
+    min-width: 160px;
 }
 
 .searchButton {
@@ -114,6 +119,10 @@
     font-size: $font12;
 }
 
+.profile>p {
+    text-wrap: nowrap;
+}
+
 .profile:hover,
 .add:hover,
 .home:hover {
@@ -123,4 +132,42 @@
 .profileStyle {
     width: 27px;
     clip-path: circle(50%);
+}
+
+.topicMenuContainer {
+    display: none;
+}
+
+@media (max-width: 850px) {
+    .topicMenuContainer {
+        display: flex;
+    }
+
+    .topicsMenuButton {
+        display: flex;
+        position: relative;
+        margin-left: 20px;
+        padding: 5px;
+        border: 1px solid $fcolor1;
+        border-radius: $radius5;
+        font-size: 2rem;
+        cursor: pointer;
+    }
+
+    .topicMenu {
+        position: absolute;
+        top: 50px;
+        left: -7px;
+    }
+}
+@media (max-width: 800px){
+    .logo{
+        display: none;
+    }
+}
+
+@media (max-width: 545px){
+    .utils{
+        display: none;
+    }
 }

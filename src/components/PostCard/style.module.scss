@@ -1,12 +1,12 @@
 @import "../../styles/variable.scss";
 
-.PostCardContainer {
+.postCardContainer {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100vw;
+    height: 100%;
     background-color: $trBackground;
     z-index: 1;
 }
@@ -16,7 +16,7 @@
     display: flex;
     gap: 10px;
     width: 60%;
-    min-width: 490px;
+    min-width: 270px;
     height: 90vh;
     top: 30px;
     padding: $cardPadding;
@@ -31,6 +31,7 @@
     height: 100%;
     width: 70%;
     margin-top: 10px;
+    overflow: auto;
 }
 
 .postCommentsContainer {
@@ -44,7 +45,7 @@
 }
 
 .postComments {
-    padding: $padding10;
+    padding: 0 7px;
     width: 100%;
     height: 100%;
     overflow-x: hidden;
@@ -88,17 +89,18 @@
 .editPostDate {
     position: absolute;
     display: flex;
+    flex-direction: column;
     color: $fcolor2;
     right: 0;
     font-size: 0.7rem;
 }
 
-.linkProfileDiv>p:nth-child(2) {
+.userInfo>p:nth-child(1) {
     font-weight: bold;
 }
 
-.linkProfileDiv>p:nth-child(3) {
-    margin: 0 5px 5px 5px;
+.userInfo>p:nth-child(2) {
+    font-size: .7rem;
 }
 
 .linkProfile {
@@ -113,18 +115,25 @@
     padding-bottom: 5px;
 }
 
-.userProfileDiv>p:nth-child(2) {
+.userInfoComponent>p:nth-child(1) {
     font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.userProfileDiv>p:nth-child(3) {
-    margin: 0 5px 5px 5px;
+.userInfoComponent>p:nth-child(2) {
+    font-size: .7rem;
 }
 
 .postImg {
-    width: 50%;
+    width: 70%;
     height: auto;
     margin: 0 auto;
+}
+
+.postScrenn>a {
+    margin: 5px auto 0;
+    font-weight: bold;
 }
 
 .contentTextContainer {
@@ -136,13 +145,14 @@
     width: 100%;
     overflow: auto;
     height: 90%;
+    min-height: 200px;
 }
 
 .postScrenn>h2 {
     margin: 5px 0;
 }
 
-.utilsMenu{
+.utilsMenu {
     position: absolute;
     right: 40px;
     top: 13px;
@@ -156,12 +166,15 @@
 
 .userCommentContainer {
     margin-top: 10px;
-}
-
-.userCommentContainer>p {
-    padding: 0 0 10px 5px;
     border-bottom: 1px solid $fcolor2;
 }
+
+.userCommentContainer>span {
+    font-size: 0.7rem;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
 
 .commentUtils {
     display: flex;
@@ -193,4 +206,45 @@
     color: $fcolor2;
     height: 100%;
     font-size: 1.3rem;
+}
+
+@media (max-width: 900px) {
+    .postContentContainer {
+        width: 80%;
+    }
+}
+
+@media (max-width: 625px) {
+    .postContentContainer {
+        width: 95%;
+    }
+
+    .postCardContainer {
+        height: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .postContentContainer {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        gap: 0;
+    }
+
+    .postScrenn {
+        width: 100%;
+        height: 70%;
+    }
+
+    .postCommentsContainer {
+        width: 100%;
+        height: 30%;
+        border-top: 1px solid $fcolor2;
+        border-left: none;
+    }
+
+    .postComments {
+        margin-top: auto;
+    }
 }
