@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen } from "../../redux/slice/stateSlice";
-import { recentContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
+import { recentContent, searchContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
 import TopicsCard from "../body/TopicsCard/TopicsCard";
 import Logo from "../../../styles/Logo";
 
@@ -15,6 +15,7 @@ const Menu: React.FC = () => {
     const dispatch = useAppDispatch()
 
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
+    const [search, setSearch] = useState<string>("")
 
     const login = async () => {
         if (!user) {
@@ -44,6 +45,15 @@ const Menu: React.FC = () => {
         id && dispatch(setUserContent(id))
     }
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault()
+        if(search){
+            dispatch(searchContent(search))
+        }else{
+            dispatch(recentContent())
+        }
+    }
+
     useEffect(() => {
         dispatch(handleUserSign())
     }, [dispatch])
@@ -62,7 +72,15 @@ const Menu: React.FC = () => {
                     <div className={Styles.logo}>LinkFlow</div>
                 </div>
                 <div className={Styles.searchDiv}>
-                    <BsSearch className={Styles.searchButton} /><input className={Styles.searchInput} type="search" placeholder="Search" />
+                    <BsSearch className={Styles.searchButton} />
+                    <form className={Styles.searchForm} onSubmit={handleSubmit}>
+                        <input
+                            className={Styles.searchInput}
+                            onChange={e => setSearch(e.target.value)}
+                            type="search"
+                            placeholder="Search"
+                        />
+                    </form>
                 </div>
                 <div className={Styles.utils}>
                     <div className={Styles.home} onClick={() => dispatch(recentContent())}>
