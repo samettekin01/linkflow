@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
 import { PostFormikValues } from "../../utils/types";
-import { setIsOpenEditPost } from "../redux/slice/stateSlice";
+import { setIsOpenEditPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
@@ -76,7 +76,7 @@ function EditPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
-            if(!isValidURL(values.link)) return alert("Invalid URL")
+            if(!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
             setSubmitStatus(true)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)

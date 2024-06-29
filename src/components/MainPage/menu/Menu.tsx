@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { useEffect, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
-import { setIsOpen } from "../../redux/slice/stateSlice";
+import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice";
 import { recentContent, searchContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
 import TopicsCard from "../body/TopicsCard/TopicsCard";
 import Logo from "../../../styles/Logo";
@@ -23,7 +23,8 @@ const Menu: React.FC = () => {
                 await signInWithPopup(auth, googleProvider)
                 dispatch(handleUserSign())
             } catch (error) {
-                console.log("Oturum açılırken bir hata oluştu: ", error)
+                console.log("An error occurred while logging in: ", error)
+                dispatch(setIsOpenSnackBar({ message: "An error occurred while logging in:", status: true }))
             }
         } else {
             dispatch(setContent(""))
@@ -36,7 +37,8 @@ const Menu: React.FC = () => {
                 await signOut(auth)
                 dispatch(handleUserSign())
             } catch (error) {
-                console.log("Oturum sonlandırılırken bir hata oluştu: ", error)
+                dispatch(setIsOpenSnackBar({ message: "An error occurred while logging in:", status: true }))
+                console.log("An error occurred while terminating the session: ", error)
             }
         }
     }
