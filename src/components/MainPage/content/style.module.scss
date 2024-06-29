@@ -50,12 +50,13 @@
     .bodyContainer{
         width: 100%;
         margin: 0 20px;
+
     }
 }
 
 @media (max-width: 380px){
     .bodyContainer{
         width: 100%;
-        margin: 0 5px;
+        margin: 0 5px 80px;
     }
 }

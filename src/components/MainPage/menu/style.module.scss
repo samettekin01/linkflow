@@ -63,6 +63,10 @@
     height: $searchHeight;
 }
 
+.searchForm {
+    width: 100%;
+}
+
 .searchInput {
     width: 60%;
     height: $searchHeight;
@@ -160,14 +164,15 @@
         left: -7px;
     }
 }
-@media (max-width: 800px){
-    .logo{
+
+@media (max-width: 800px) {
+    .logo {
         display: none;
     }
 }
 
-@media (max-width: 545px){
-    .utils{
+@media (max-width: 545px) {
+    .utils {
         display: none;
     }
 }

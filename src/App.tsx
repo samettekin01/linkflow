@@ -7,11 +7,13 @@ import PostCard from './components/PostCard/PostCard';
 import Styles from "./styles/style.module.scss"
 import EditPost from './components/EditPost/EditPost';
 import BottomMenu from './components/MainPage/menu/BottomMenu/BottomMenu';
+import SnackBar from './components/SnackBar/SnackBar';
 
 function App() {
   const postStatus = useAppSelector(state => state.post.post)
   const getPostStatus = useAppSelector(state => state.post.getPost)
   const getEditPostStatus = useAppSelector(state => state.post.getEditPost)
+  const snackBarRef = useAppSelector(state => state.post.snackBar)
 
   useEffect(() => {
     if (postStatus || getPostStatus || getEditPostStatus) {
@@ -19,7 +21,8 @@ function App() {
     } else {
       document.body.style.overflow = ""
     }
-  }, [postStatus, getPostStatus, getEditPostStatus])
+
+  }, [postStatus, getPostStatus, getEditPostStatus, snackBarRef])
   return (
     <div className={Styles.container}>
       <Menu />
@@ -28,6 +31,7 @@ function App() {
       {getPostStatus && <PostCard />}
       {getEditPostStatus && <EditPost />}
       <BottomMenu />
+      {snackBarRef.status && <SnackBar />}
     </div>
   );
 }

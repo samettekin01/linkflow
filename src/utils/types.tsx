@@ -72,6 +72,10 @@ export interface IsOpen {
     post: boolean
     getPost: boolean
     getEditPost: boolean
+    snackBar: {
+        message: string
+        status: boolean
+    }
     getPostMenu: { [key: string]: boolean }
     getComment: { [key: string]: boolean }
 }

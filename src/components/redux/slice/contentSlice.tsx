@@ -14,18 +14,17 @@ const initialState: ContentSliceTypes | PostState = {
     contentStatus: "",
     currentPost: null,
     comment: [],
-    commentStatus: ""
+    commentStatus: "",
 }
 
 export const handleCommentsCollection = createAsyncThunk("comments", async (id: string) => {
     const getComments = (await getDocs(query(
         collection(db, "comments"),
         where("commentsCollectionID", "==", id),
-        orderBy("__name__","desc"),
+        orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    let sortComment = getComments.sort((a, b) => a.createdAt - b.createdAt)
-    return sortComment
+    return getComments
 })
 
 
@@ -44,30 +43,39 @@ export const setContent = createAsyncThunk("content", async (id: string | undefi
     const getContent = (await getDocs(query(
         collection(db, "posts"),
         where("categoryId", "==", id),
+        orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
-    return sortPost
+    return getContent
 })
 
 export const setUserContent = createAsyncThunk("userContent", async (id: string | undefined) => {
     const getContent = (await getDocs(query(
         collection(db, "posts"),
         where("createdBy", "==", id),
+        orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
-    return sortPost
+    return getContent
 })
 
 export const recentContent = createAsyncThunk("recentContent", async () => {
     const getContent = (await getDocs(query(
         collection(db, "posts"),
-        orderBy("createdAt", "asc"),
+        orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    const sortPost = getContent.sort((a, b) => b.createdAt - a.createdAt)
-    return sortPost
+    return getContent
+})
+
+export const searchContent = createAsyncThunk("search", async (text: string) => {
+    const getSearch = (await getDocs(query(
+        collection(db, "posts"),
+        where("content.title", "==", text),
+        orderBy("createdAt", "desc"),
+        limit(10)
+    ))).docs.map(d => d.data())
+    return getSearch
 })
 
 const contentSlice = createSlice({
@@ -128,6 +136,16 @@ const contentSlice = createSlice({
         })
         builder.addCase(handleComment.rejected, state => {
             state.commentStatus = "rejected"
+        })
+        builder.addCase(searchContent.fulfilled, (state, action) => {
+            state.content = action.payload
+            state.contentStatus = "fulfilled"
+        })
+        builder.addCase(searchContent.pending, state => {
+            state.contentStatus = "pending"
+        })
+        builder.addCase(searchContent.rejected, state => {
+            state.contentStatus = "rejected"
         })
     }
 })

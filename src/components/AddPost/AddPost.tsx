@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { setIsOpen } from "../redux/slice/stateSlice"
+import { setIsOpen, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -7,8 +7,8 @@ import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
-import Styles from "./style.module.scss"
 import { recentContent } from "../redux/slice/contentSlice";
+import Styles from "./style.module.scss"
 
 
 export const isValidURL = (url: string) => {
@@ -93,7 +93,7 @@ function AddPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
-            if(!isValidURL(values.link)) return alert("Invalid URL")
+            if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
             setSubmitStatus(true)
             const commentsCollectionId = await createCommentRef()
             const getURL = await dowloadURL(commentsCollectionId)
@@ -121,6 +121,7 @@ function AddPost() {
             dispatch(recentContent())
             setSubmitStatus(false)
             dispatch(setIsOpen(false))
+            dispatch(setIsOpenSnackBar({ message: "Post added", status: true }))
         }
     })
 

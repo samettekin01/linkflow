@@ -1,42 +1,41 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, createRef, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
-import { setIsOpenEditComment, setIsOpenPost } from "../redux/slice/stateSlice";
+import { setIsOpenEditComment, setIsOpenPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
 import { BsArrowUpCircleFill, BsX } from "react-icons/bs";
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { handleCommentsCollection } from "../redux/slice/contentSlice";
 import { CommentData } from "../../utils/types";
-import Styles from "./style.module.scss"
+import Styles from "./style.module.scss";
 
 const getFullDate = (time: number | undefined) => {
     if (time === undefined) return "Invalid Date";
-    const date = new Date(time).toLocaleDateString()
-    return date
+    const date = new Date(time).toLocaleDateString();
+    return date;
 }
 
 function PostCard() {
-    const getPostContainer = useRef<HTMLDivElement | null>(null)
+    const getPostContainer = useRef<HTMLDivElement | null>(null);
+    const commentRefs = useRef<{ [key: string]: React.RefObject<HTMLDivElement> }>({});
 
-    const user = useAppSelector(state => state.user.user)
-    const isOpen = useAppSelector(state => state.post.getPost)
-    const getPost = useAppSelector(state => state.content.currentPost)
-    const comment = useAppSelector(state => state.content.comment)
-    const commentCollection = useAppSelector(state => state.content.commentsCollection)
-    const editCommentStatus = useAppSelector(state => state.post.getComment)
+    const user = useAppSelector(state => state.user.user);
+    const isOpen = useAppSelector(state => state.post.getPost);
+    const getPost = useAppSelector(state => state.content.currentPost);
+    const comment = useAppSelector(state => state.content.comment);
+    const commentCollection = useAppSelector(state => state.content.commentsCollection);
+    const editCommentStatus = useAppSelector(state => state.post.getComment);
 
-    const [commentText, setCommentText] = useState<string>("")
-    const [commentStatus, setCommentStatus] = useState<boolean>(false)
-    const [editCommentText, setEditCommentText] = useState<string>("")
+    const [commentText, setCommentText] = useState<string>("");
+    const [commentStatus, setCommentStatus] = useState<boolean>(false);
+    const [editCommentText, setEditCommentText] = useState<string>("");
 
-    const commentRef = useRef<HTMLDivElement | null>(null)
+    const dispatch = useAppDispatch();
 
-    const dispatch = useAppDispatch()
-
-    const time = new Date().valueOf()
+    const time = new Date().valueOf();
 
     const setComment = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setCommentStatus(true)
+        e.preventDefault();
+        setCommentStatus(true);
         if (user) {
             if (comment) {
                 if (commentText) {
@@ -51,60 +50,82 @@ function PostCard() {
                         content: commentText || "",
                         updatedAt: 0 || "",
                         replies: {}
-
-                    })
-                    await updateDoc(doc(db, "comments", commentDoc.id), { commentID: commentDoc.id })
+                    });
+                    await updateDoc(doc(db, "comments", commentDoc.id), { commentID: commentDoc.id });
                     await updateDoc(doc(db, "commentsCollection", `${getPost?.commentsCollectionId}`), {
                         [commentDoc.id]: getPost?.commentsCollectionId
-                    })
-                    getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId))
-                    setCommentText("")
-                    setCommentStatus(false)
+                    });
+                    getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId));
+                    setCommentText("");
+                    setCommentStatus(false);
                 }
             }
         }
     }
 
-
     const editComment = (id: string, comment: string) => {
+        const commentRef = commentRefs.current[id]?.current;
         if (!editCommentStatus[id]) {
-            dispatch(setIsOpenEditComment({ [id]: true }))
+            dispatch(setIsOpenEditComment({ [id]: true }));
+            setTimeout(() => {
+                commentRefs.current[id]?.current?.focus();
+            }, 0);
         } else {
-            dispatch(setIsOpenEditComment({ [id]: false }))
             if (editCommentText === "" || editCommentText === comment) {
-                console.log("Değişiklik yapılmadı")
+                if (commentRef) {
+                    commentRef.innerText = comment
+                }
+                dispatch(setIsOpenEditComment({ [id]: false }));
             } else {
+                if (editCommentText === "") return dispatch(setIsOpenSnackBar({ message: "Empty text area", status: true }))
+                dispatch(setIsOpenEditComment({ [id]: false }));
                 updateDoc(doc(db, "comments", id), {
                     content: editCommentText,
                     updatedAt: new Date().valueOf()
-                })
-                setEditCommentText("")
+                });
+                setEditCommentText("");
             }
         }
     }
 
     const deleteComment = (id: string) => {
         if (window.confirm("Are you sure you want to delete this comment")) {
-            deleteDoc(doc(db, "comments", id)).then(() => console.log("Comment deleted successfully")).catch(e => console.log("Error deleting comment: ", e))
-            getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId))
+            deleteDoc(doc(db, "comments", id))
+                .then(() => dispatch(setIsOpenSnackBar({ message: "Comment deleted successfully", status: true })))
+                .catch(e => {
+                    console.log("Error deleting comment: ", e)
+                    dispatch(setIsOpenSnackBar({ message: "Error deleting comment", status: true }))
+                }
+                );
+            getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId));
+        }
+    }
+
+    const cancelComment = (id: string, comment: string) => {
+        const commentRef = commentRefs.current[id]?.current;
+        if (commentRef) {
+            commentRef.blur();
+            commentRef.innerText = comment;
+            dispatch(setIsOpenEditComment({ [id]: false }));
         }
     }
 
     useEffect(() => {
-        getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId))
+        getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId));
         const handleOutsideClick = (event: MouseEvent) => {
             if (getPostContainer.current && !getPostContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpenPost(false));
             }
-        };
+        }
         if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            document.addEventListener('mousedown', handleOutsideClick);
+            document.body.style.overflow = "hidden";
+            document.addEventListener("mousedown", handleOutsideClick);
         } else {
-            document.body.style.overflow = '';
-            document.removeEventListener('mousedown', handleOutsideClick);
+            document.body.style.overflow = "";
+            document.removeEventListener("mousedown", handleOutsideClick);
         }
     }, [isOpen, dispatch, getPost]);
+
     return (
         <div className={Styles.postCardContainer}>
             <div className={Styles.postContentContainer} ref={getPostContainer}>
@@ -138,29 +159,38 @@ function PostCard() {
                 </div>
                 <div className={Styles.postCommentsContainer}>
                     <div className={Styles.postComments} >
-                        {commentCollection ? commentCollection.map((data: CommentData) =>
-                            <div key={data.commentID} className={Styles.userCommentContainer}>
-                                <div className={Styles.userProfileDiv}>
-                                    <img
-                                        className={Styles.commentsUserProfile}
-                                        src={data.userImg}
-                                        alt={data.username}
-                                    />
-                                    <div className={Styles.userInfoComponent}>
-                                        <p>{data.username}</p>
-                                        <p>{new Date(data.createdAt).toLocaleDateString()}</p>
+                        {commentCollection ? commentCollection.map((data: CommentData) => {
+                            if (!commentRefs.current[data.commentID]) {
+                                commentRefs.current[data.commentID] = createRef<HTMLDivElement>();
+                            }
+                            return (
+                                <div key={data.commentID} className={Styles.userCommentContainer}>
+                                    <div className={Styles.userProfileDiv}>
+                                        <img
+                                            className={Styles.commentsUserProfile}
+                                            src={data.userImg}
+                                            alt={data.username}
+                                        />
+                                        <div className={Styles.userInfoComponent}>
+                                            <p>{data.username}</p>
+                                            <p>{new Date(data.createdAt).toLocaleDateString()}</p>
+                                        </div>
                                     </div>
+                                    <div
+                                        ref={commentRefs.current[data.commentID]}
+                                        contentEditable={editCommentStatus[data.commentID]}
+                                        suppressContentEditableWarning={true}
+                                        onInput={e => setEditCommentText((e.target as HTMLDivElement).innerText)}
+                                        tabIndex={0}
+                                    >
+                                        {data.content}
+                                    </div>
+                                    {data.userId === user?.uid && <span onClick={() => editComment(data.commentID, data.content)}>{editCommentStatus[data.commentID] ? "Done" : "Editing"}</span>}
+                                    {editCommentStatus[data.commentID] && <span onClick={() => cancelComment(data.commentID, data.content)}>Cancel</span>}
+                                    {data.userId === user?.uid && <span onClick={() => deleteComment(data.commentID)}>Delete</span>}
                                 </div>
-                                <div
-                                    ref={commentRef}
-                                    contentEditable={editCommentStatus[data.commentID]}
-                                    suppressContentEditableWarning={true}
-                                    onInput={e => setEditCommentText((e.target as HTMLDivElement).innerText)}
-                                >{data.content}</div>
-                                <span onClick={() => editComment(data.commentID, data.content)}>{editCommentStatus[data.commentID] ? "Done" : "Editing"}</span>
-                                {editCommentStatus[data.commentID] && <span onClick={() => dispatch(setIsOpenEditComment({ [data.commentID]: false }))}>Cancel</span>}
-                                <span onClick={() => deleteComment(data.commentID)}>Delete</span>
-                            </div>) : ""}
+                            );
+                        }) : ""}
                     </div>
                     {user && getPost && <form className={Styles.commentUtils} onSubmit={async (e) => await setComment(e)}>
                         <input
@@ -180,4 +210,4 @@ function PostCard() {
     )
 }
 
-export default PostCard
+export default PostCard;

@@ -217,6 +217,7 @@
 @media (max-width: 625px) {
     .postContentContainer {
         width: 95%;
+        height: 80vh;
     }
 
     .postCardContainer {
@@ -228,6 +229,7 @@
     .postContentContainer {
         display: flex;
         flex-direction: column;
+        height: 80vh;
         padding: 20px;
         gap: 0;
     }

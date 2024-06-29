@@ -2,7 +2,7 @@ import { BsFillTrash3Fill, BsPencil, BsThreeDotsVertical } from "react-icons/bs"
 import Styles from "./style.module.scss"
 import { DocumentData, deleteDoc, doc } from "firebase/firestore";
 import { useEffect, useRef } from "react";
-import { setIsMenuOpen, setIsOpenEditPost } from "../redux/slice/stateSlice";
+import { setIsMenuOpen, setIsOpenEditPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { handleComment, setContent, setCurrentPost } from "../redux/slice/contentSlice";
 import { db, storage } from "../../firebase/firebase";
@@ -32,11 +32,23 @@ function PostUtilsMenu({ post }: DocumentData) {
                             .then(() => {
                                 comments.forEach((data: string) => {
                                     deleteDoc(doc(db, "comments", data)).then(() => {
-                                        console.log("Post ve commets deleted successfully")
+                                        dispatch(setIsOpenSnackBar({ message: "Post ve commets deleted successfully", status: true }))
                                     })
                                 })
-                            }).catch(e => console.log("Error deleting file: ", e))).catch(e => console.log("Error deleting post: ", e))
-                deleteObject(ref(storage, `photos/${d.commentsCollectionId}`)).then(() => console.log("File deleted successfully")).catch(e => console.log("Error deleting file: ", e))
+                            }).catch(e => {
+                                console.log("Error deleting file: ", e)
+                                dispatch(setIsOpenSnackBar({ message: `Error deleting file`, status: true }))
+                            }))
+                    .catch(e => {
+                        console.log("Error deleting post: ", e)
+                        dispatch(setIsOpenSnackBar({ message: `Error deleting post: ${e}`, status: true }))
+                    })
+                deleteObject(ref(storage, `photos/${d.commentsCollectionId}`))
+                    .then(() => dispatch(setIsOpenSnackBar({ message: `File deleted successfully`, status: true })))
+                    .catch(e => {
+                        console.log("Error deleting file: ", e)
+                        dispatch(setIsOpenSnackBar({ message: `Error deleting file`, status: true }))
+                    })
                 dispatch(setContent(d.categoryId))
             }
         }
