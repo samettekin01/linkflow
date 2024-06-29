@@ -1,0 +1,30 @@
+@import "../../styles/variable.scss";
+
+.snackBar{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 10px;
+    left: -300px;
+    padding: 10px 20px;
+    background-color: $background2;
+    border-radius: $radius5;
+    color: $fcolor2;
+    font-size: 1.1rem;
+    animation: snackBarAnim 5s alternate-reverse;
+    z-index: 1000;
+}
+
+.snackBar > span{
+    margin-right: 20px;
+}
+
+@keyframes snackBarAnim{
+    0% {left: -300px}
+    10% {left: 15px}
+    30% {left: 10px}
+    89% {left: 10px}
+    90% {left: 15px}
+    100% {left: -300px}
+}
