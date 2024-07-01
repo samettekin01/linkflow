@@ -83,8 +83,6 @@ export interface IsOpen {
 export interface UserInitialState {
     user: UserInformations | null
     userStatus: string
-    userData: DocumentData | undefined
-    userDataStatus: string
 }
 
 export interface CategoriesTypes {

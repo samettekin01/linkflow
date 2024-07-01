@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setIsOpen, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { DocumentData, addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
 import { PostFormikValues } from "../../utils/types";
@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import { recentContent } from "../redux/slice/contentSlice";
 import Styles from "./style.module.scss"
+import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
 
 
 export const isValidURL = (url: string) => {
@@ -21,6 +22,7 @@ function AddPost() {
 
     const user = useAppSelector(state => state.user.user)
     const getCategories = useAppSelector(state => state.categories.categories)
+    const getCategory = useAppSelector(state => state.categories.category)
     const isOpen = useAppSelector(state => state.post.post)
 
     const categoriesID = process.env.REACT_APP_CATEGORIES_ID
@@ -59,21 +61,16 @@ function AddPost() {
     }
 
     const createCategoryRef = async (categoryName: string, postId: string) => {
-        const cg = getCategories.map(d => d)
         const postCreateId = await addDoc(categoryRef, {
-            [categoryName]: {
-                createdAt: time,
-                createdBy: user?.uid,
-                createdName: user?.displayName,
-            }
+            categoryName: categoryName,
+            createdAt: time,
+            createdBy: user?.uid,
+            createdName: user?.displayName,
         })
-        cg.map(data => updateDoc(categoriesRef, {
-            categories: {
-                ...data.categories,
-                [categoryName]: postCreateId.id
-            }
-        }
-        ))
+        await updateDoc(doc(db, "categoryId", postCreateId.id), {categoryId: postCreateId.id})
+        await updateDoc(categoriesRef, {
+            [categoryName]: postCreateId.id
+        })
         updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
         dispatch(recentContent())
         return postCreateId.id
@@ -106,7 +103,7 @@ function AddPost() {
                 createdAt: time,
                 updateAt: 0,
                 category: category,
-                categoryId: getCategories[0].categories[values.selectedCategory] || "",
+                categoryId: getCategories[0][values.selectedCategory] || "",
                 content: {
                     title: values.title,
                     link: values.link,
@@ -126,6 +123,8 @@ function AddPost() {
     })
 
     useEffect(() => {
+        dispatch(handleCategories())
+        dispatch(handleCategory())
         const handleOutsideClick = (e: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(e.target as Node)) {
                 dispatch(setIsOpen(false));
@@ -165,8 +164,8 @@ function AddPost() {
                         required
                     >
                         <option value="">Select Category</option>
-                        {getCategories && Object.keys(getCategories[0].categories).sort().map(data =>
-                            <option key={getCategories[0].categories[data]} value={data} >{data}</option>
+                        {getCategory && getCategory.map((data: DocumentData) =>
+                            <option key={data.categoryName} value={data.categoryName} >{data.categoryName}</option>
                         )}
                         <option value="Other">Other</option>
                     </select>
@@ -192,7 +191,7 @@ function AddPost() {
                         placeholder="Add Description"
                         className={Styles.postInputDescription}
                         value={values.description}
-                        rows={5}
+                        rows={10}
                         cols={60}
                         maxLength={3000}
                         onChange={handleChange}

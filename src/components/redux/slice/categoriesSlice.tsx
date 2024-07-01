@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore"
+import { collection, getDocs, orderBy, query } from "firebase/firestore"
 import { db } from "../../../firebase/firebase"
 import { CategoriesTypes } from "../../../utils/types"
 
@@ -12,13 +12,13 @@ const initialState: CategoriesTypes = {
 }
 
 export const handleCategories = createAsyncThunk("categories", async () => {
-    const querySnapshot = await getDocs(query(collection(db, "categories"), orderBy("categories", "desc")))
+    const querySnapshot = await getDocs(collection(db, "categories"))
     const categories = querySnapshot.docs.map(doc => doc.data())
     return categories
 })
 
-export const handleCategory = createAsyncThunk("category", async (id: string) => {
-    const category = (await getDoc(doc(db, "categoryId", id))).data()
+export const handleCategory = createAsyncThunk("category", async ()=> {
+    const category = (await getDocs(query(collection(db,"categoryId"), orderBy("categoryName", "asc")))).docs.map(d => d.data())
     return category
 })
 

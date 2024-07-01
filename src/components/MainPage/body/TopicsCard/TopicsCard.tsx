@@ -2,30 +2,32 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store/store"
 import { setContent } from "../../../redux/slice/contentSlice"
 import Styles from "./style.module.scss"
 import { useEffect } from "react"
-import { handleCategories } from "../../../redux/slice/categoriesSlice"
+import { handleCategory } from "../../../redux/slice/categoriesSlice"
+import { DocumentData } from "firebase/firestore"
 
 function TopicsCard() {
-    const categories = useAppSelector(state => state.categories.categories)
+    const categories = useAppSelector(state => state.categories.category)
     const dispatch = useAppDispatch()
     const handleGetCategory = async (id: string) => {
         dispatch(setContent(id))
     }
 
     useEffect(() => {
-        dispatch(handleCategories())
+        dispatch(handleCategory())
     }, [dispatch])
-    
+
     return (
         <div className={Styles.topicsContainer}>
+            <div className={Styles.topicsContainerNotch}></div>
             <div className={Styles.topicTitle}><h1>Topics</h1></div>
-            {categories.length > 0 ?
-                Object.keys(categories[0].categories).sort().map(data =>
+            {categories ?
+                categories.map((data: DocumentData) =>
                     <div
-                        key={categories[0].categories[data]}
+                        key={data.categoryName}
                         className={Styles.topics}
-                        onClick={() => handleGetCategory(categories[0].categories[data])}
+                        onClick={() => handleGetCategory(data.categoryId)}
                     >
-                        {data}
+                        {data.categoryName}
                     </div>
                 )
                 : "...Loading"}

@@ -4,18 +4,20 @@ import { PostFormikValues } from "../../utils/types";
 import { setIsOpenEditPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { DocumentData, addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import Styles from "./style.module.scss";
 import { setUserContent } from "../redux/slice/contentSlice";
 import { isValidURL } from "../AddPost/AddPost";
+import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
 
 function EditPost() {
     const dispatch = useAppDispatch();
 
     const user = useAppSelector(state => state.user.user)
     const getCategories = useAppSelector(state => state.categories.categories)
+    const getCategory = useAppSelector(state => state.categories.category)
     const isOpen = useAppSelector(state => state.post.getEditPost)
     const postContent = useAppSelector(state => state.content.currentPost)
 
@@ -43,21 +45,16 @@ function EditPost() {
     }
 
     const createCategoryRef = async (categoryName: string, postId: string) => {
-        const cg = getCategories.map(d => d)
         const postCreateId = await addDoc(categoryRef, {
-            [categoryName]: {
-                createdAt: time,
-                createdBy: user?.uid,
-                createdName: user?.displayName,
-            }
+            categoryName: categoryName,
+            createdAt: time,
+            createdBy: user?.uid,
+            createdName: user?.displayName,
         })
-        cg.map(data => updateDoc(categoriesRef, {
-            categories: {
-                ...data.categories,
-                [categoryName]: postCreateId.id
-            }
-        }
-        ))
+        await updateDoc(doc(db, "categoryId", postCreateId.id), {categoryId: postCreateId.id})
+        await updateDoc(categoriesRef, {
+            [categoryName]: postCreateId.id
+        })
         updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
         return postCreateId.id
     }
@@ -76,7 +73,7 @@ function EditPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
-            if(!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
+            if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
             setSubmitStatus(true)
             const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
             const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)
@@ -88,7 +85,7 @@ function EditPost() {
                 createdAt: postContent?.createdAt,
                 updatedAt: time,
                 category: category || postContent?.category,
-                categoryId: getCategories[0].categories[values.selectedCategory] || postContent?.categoryId,
+                categoryId: getCategories[0][values.selectedCategory] || postContent?.categoryId,
                 content: {
                     title: values.title,
                     link: values.link,
@@ -107,6 +104,8 @@ function EditPost() {
     })
 
     useEffect(() => {
+        dispatch(handleCategories())
+        dispatch(handleCategory())
         const handleOutsideClick = (e: MouseEvent) => {
             if (editPostContainer.current && !editPostContainer.current.contains(e.target as Node)) {
                 dispatch(setIsOpenEditPost(false));
@@ -144,8 +143,8 @@ function EditPost() {
                         value={values.selectedCategory}
                     >
                         <option value="">Select Category</option>
-                        {getCategories && Object.keys(getCategories[0].categories).sort().map(data =>
-                            <option key={getCategories[0].categories[data]} value={data} >{data}</option>
+                        {getCategory && getCategory.map((data: DocumentData) =>
+                            <option key={data.categoryName} value={data.categoryName} >{data.categoryName}</option>
                         )}
                         <option value="Other">Other</option>
                     </select>
@@ -168,7 +167,7 @@ function EditPost() {
                         placeholder="Edit Description"
                         className={Styles.editPostInputDescription}
                         value={values.description}
-                        rows={5}
+                        rows={10}
                         cols={60}
                         maxLength={3000}
                         onChange={handleChange}

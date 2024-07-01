@@ -1,4 +1,4 @@
-import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsSearch, BsBoxArrowLeft, BsList } from "react-icons/bs";
+import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList } from "react-icons/bs";
 import { auth, googleProvider } from "../../../firebase/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice";
-import { recentContent, searchContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
+import { recentContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
 import TopicsCard from "../body/TopicsCard/TopicsCard";
 import Logo from "../../../styles/Logo";
 
@@ -15,7 +15,7 @@ const Menu: React.FC = () => {
     const dispatch = useAppDispatch()
 
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
-    const [search, setSearch] = useState<string>("")
+    // const [search, setSearch] = useState<string>("")
 
     const login = async () => {
         if (!user) {
@@ -47,14 +47,14 @@ const Menu: React.FC = () => {
         id && dispatch(setUserContent(id))
     }
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault()
-        if(search){
-            dispatch(searchContent(search))
-        }else{
-            dispatch(recentContent())
-        }
-    }
+    // const handleSubmit = (e: any) => {
+    //     e.preventDefault()
+    //     if(search){
+    //         dispatch(searchContent(search))
+    //     }else{
+    //         dispatch(recentContent())
+    //     }
+    // }
 
     useEffect(() => {
         dispatch(handleUserSign())
@@ -73,7 +73,7 @@ const Menu: React.FC = () => {
                     <Logo />
                     <div className={Styles.logo}>LinkFlow</div>
                 </div>
-                <div className={Styles.searchDiv}>
+                {/* <div className={Styles.searchDiv}>
                     <BsSearch className={Styles.searchButton} />
                     <form className={Styles.searchForm} onSubmit={handleSubmit}>
                         <input
@@ -83,7 +83,7 @@ const Menu: React.FC = () => {
                             placeholder="Search"
                         />
                     </form>
-                </div>
+                </div> */}
                 <div className={Styles.utils}>
                     <div className={Styles.home} onClick={() => dispatch(recentContent())}>
                         <BsHouseFill className={Styles.utilsIcon} />

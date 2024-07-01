@@ -37,16 +37,10 @@ export const handleUserSign = createAsyncThunk<UserInformations | null>("user", 
     });
 });
 
-export const getUserData = createAsyncThunk("userData", async (uid: string) => {
-    const userData = await getDoc(doc(db, "users", uid))
-    return userData.data();
-})
 
 const initialState: UserInitialState = {
     user: null,
     userStatus: "",
-    userData: undefined,
-    userDataStatus: ""
 };
 
 const userSlice = createSlice({
@@ -63,16 +57,6 @@ const userSlice = createSlice({
         })
         builder.addCase(handleUserSign.rejected, state => {
             state.userStatus = "rejected"
-        })
-        builder.addCase(getUserData.fulfilled, (state, action) => {
-            state.userData = action.payload
-            state.userDataStatus = "fulfilled"
-        })
-        builder.addCase(getUserData.pending, state => {
-            state.userDataStatus = "pending"
-        })
-        builder.addCase(getUserData.rejected, state => {
-            state.userDataStatus = "rejeted"
         })
     }
 });

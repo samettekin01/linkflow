@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore"
 import { ContentSliceTypes, PostData, PostState } from "../../../utils/types"
 import { db } from "../../../firebase/firebase"
 
@@ -46,6 +46,9 @@ export const setContent = createAsyncThunk("content", async (id: string | undefi
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
+    if(getContent.length === 0){
+        await deleteDoc(doc(db,"categoryId", `${id}`)).catch(e => console.log("Error deleting category: ", e))
+    }
     return getContent
 })
 
@@ -69,9 +72,10 @@ export const recentContent = createAsyncThunk("recentContent", async () => {
 })
 
 export const searchContent = createAsyncThunk("search", async (text: string) => {
+    const lowerCaseText = text.toLowerCase();
     const getSearch = (await getDocs(query(
         collection(db, "posts"),
-        where("content.title", "==", text),
+        where("content.title", "array-contains", lowerCaseText),
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())

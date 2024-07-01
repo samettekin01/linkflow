@@ -8,13 +8,14 @@ import TopicsCard from "../body/TopicsCard/TopicsCard"
 import LinkCard from "../body/linkCard/LinkCard"
 import { useEffect } from "react"
 import Styles from "./style.module.scss"
+import { PostData } from "../../../utils/types"
 
 function Content() {
     const dispatch = useAppDispatch()
     const user = useAppSelector(state => state.user.user)
     const content = useAppSelector(state => state.content.content)
 
-    const handlePost = (data: any) => {
+    const handlePost = (data: PostData) => {
         dispatch(setIsOpenPost(true))
         dispatch(setCurrentPost(data))
     }
@@ -28,16 +29,16 @@ function Content() {
                 {user ? <ShareCard /> : ""}
                 <div className={Styles.contentContainer}>
                     {
-                        content ? content.map((d: DocumentData) =>
-                            <div key={d.postID} className={Styles.linkCardContainer}>
-                                {d.createdBy === user?.uid &&
+                        content ? content.map((data: DocumentData) =>
+                            <div key={data.postID} className={Styles.linkCardContainer}>
+                                {data.createdBy === user?.uid &&
                                     <div className={Styles.utilsMenu}>
                                         <PostUtilsMenu
-                                            post={d}
+                                            post={data}
                                         />
                                     </div>
                                 }
-                                <LinkCard data={d} onClick={handlePost} />
+                                <LinkCard data={data} onClick={handlePost} />
                             </div>)
                             : "...Loading"
                     }

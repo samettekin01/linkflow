@@ -1,7 +1,7 @@
 import { FormEvent, createRef, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store/store";
 import { setIsOpenEditComment, setIsOpenPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
-import { BsArrowUpCircleFill, BsX } from "react-icons/bs";
+import { BsArrowUpCircleFill, BsChat, BsX } from "react-icons/bs";
 import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { handleCommentsCollection } from "../redux/slice/contentSlice";
@@ -28,6 +28,7 @@ function PostCard() {
     const [commentText, setCommentText] = useState<string>("");
     const [commentStatus, setCommentStatus] = useState<boolean>(false);
     const [editCommentText, setEditCommentText] = useState<string>("");
+    const [commentsContent, setCommentContent] = useState<boolean>(false)
 
     const dispatch = useAppDispatch();
 
@@ -68,6 +69,7 @@ function PostCard() {
         if (!editCommentStatus[id]) {
             dispatch(setIsOpenEditComment({ [id]: true }));
             setTimeout(() => {
+                commentRefs.current[id].current?.classList.add(Styles.editComment)
                 commentRefs.current[id]?.current?.focus();
             }, 0);
         } else {
@@ -85,6 +87,7 @@ function PostCard() {
                 });
                 setEditCommentText("");
             }
+            commentRefs.current[id].current?.classList.remove(Styles.editComment)
         }
     }
 
@@ -107,30 +110,51 @@ function PostCard() {
             commentRef.blur();
             commentRef.innerText = comment;
             dispatch(setIsOpenEditComment({ [id]: false }));
+            commentRefs.current[id].current?.classList.remove(Styles.editComment)
         }
     }
+
+    const getComments = () => {
+        setCommentContent(!commentsContent)
+    }
+
 
     useEffect(() => {
         getPost && dispatch(handleCommentsCollection(getPost?.commentsCollectionId));
         const handleOutsideClick = (event: MouseEvent) => {
             if (getPostContainer.current && !getPostContainer.current.contains(event.target as Node)) {
                 dispatch(setIsOpenPost(false));
+                closePost()
+            }
+        }
+        const closePost = (id?: string) => {
+            dispatch(setIsOpenEditComment({ [`${id}`]: false }));
+        }
+        const handleWindowResize = () => {
+            if (window.innerWidth > 500) {
+                setCommentContent(true)
+            } else {
+                setCommentContent(false)
             }
         }
         if (isOpen) {
             document.body.style.overflow = "hidden";
             document.addEventListener("mousedown", handleOutsideClick);
+            handleWindowResize()
         } else {
             document.body.style.overflow = "";
             document.removeEventListener("mousedown", handleOutsideClick);
         }
+        window.addEventListener("resize", handleWindowResize)
     }, [isOpen, dispatch, getPost]);
 
     return (
         <div className={Styles.postCardContainer}>
             <div className={Styles.postContentContainer} ref={getPostContainer}>
+                <div className={Styles.exitButton}>
+                    <BsX onClick={() => dispatch(setIsOpenPost(false))} />
+                </div>
                 <div className={Styles.postScrenn} >
-                    <BsX className={Styles.exitButton} onClick={() => dispatch(setIsOpenPost(false))} />
                     <div className={Styles.linkProfileDiv}>
                         <img
                             className={Styles.linkProfile}
@@ -157,7 +181,8 @@ function PostCard() {
                         <p>{getPost?.content.description}</p>
                     </div>
                 </div>
-                <div className={Styles.postCommentsContainer}>
+                {commentsContent && <div className={Styles.postCommentsContainer}>
+                    <BsX className={Styles.commetsExit} style={window.innerWidth > 500 ? { display: "none" } : { display: "block" }} onClick={() => setCommentContent(false)} />
                     <div className={Styles.postComments} >
                         {commentCollection ? commentCollection.map((data: CommentData) => {
                             if (!commentRefs.current[data.commentID]) {
@@ -173,10 +198,14 @@ function PostCard() {
                                         />
                                         <div className={Styles.userInfoComponent}>
                                             <p>{data.username}</p>
-                                            <p>{new Date(data.createdAt).toLocaleDateString()}</p>
+                                            <div>
+                                                <p>{getFullDate(data.createdAt)}</p>
+                                                {data.updatedAt > 0 && <span>Edited({getFullDate(data.updatedAt)})</span>}
+                                            </div>
                                         </div>
                                     </div>
                                     <div
+                                        className={`${Styles.commentDiv}`}
                                         ref={commentRefs.current[data.commentID]}
                                         contentEditable={editCommentStatus[data.commentID]}
                                         suppressContentEditableWarning={true}
@@ -196,7 +225,7 @@ function PostCard() {
                         <input
                             className={Styles.commentInput}
                             type="text"
-                            placeholder="Write comment"
+                            placeholder="comment"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                         />
@@ -204,6 +233,9 @@ function PostCard() {
                             <BsArrowUpCircleFill />
                         </button>
                     </form>}
+                </div>}
+                <div className={Styles.postUtils} onClick={getComments}>
+                    <BsChat /> <span>Comments</span>
                 </div>
             </div>
         </div >
