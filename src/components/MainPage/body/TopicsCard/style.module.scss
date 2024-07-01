@@ -11,6 +11,21 @@
     box-shadow: $bscolor;
 }
 
+.topicsContainerNotch{  
+    display: none;
+    position: absolute;
+    padding: 10px;
+    border: 1px solid #8800863b;
+    background-color: $background1;
+    border-radius: 5px 0 0 0;
+    border-bottom: none;
+    border-right: none;
+    top: -11px;
+    left: 10px;
+    transform: rotate(45deg);
+    z-index: -100;
+}
+
 .topicTitle {
     margin-bottom: 10px;
 }
@@ -22,4 +37,10 @@
 .topics {
     margin-bottom: 5px;
     cursor: pointer;
+}
+
+@media (max-width: 850px) {
+    .topicsContainerNotch{
+        display: flex;
+    }
 }

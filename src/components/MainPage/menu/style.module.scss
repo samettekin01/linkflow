@@ -102,6 +102,7 @@
     transition: $transitionTime;
     font-weight: bold;
     cursor: pointer;
+    user-select: none;
 }
 
 .utilsIcon {
@@ -110,17 +111,14 @@
 
 .home {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .add {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .profile {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .profile>p {
@@ -160,14 +158,19 @@
 
     .topicMenu {
         position: absolute;
-        top: 50px;
-        left: -7px;
+        top: 65px;
+        left: -10px;
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 300px) {
     .logo {
         display: none;
+    }
+
+    .navBarContainer{
+        display: flex;
+        justify-content: center;
     }
 }
 

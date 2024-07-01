@@ -1,20 +1,9 @@
 @import "../../../../styles/variable.scss";
+@import "../style.module.scss";
 
 .utilsBottom {
     display: none;
     z-index: 1;
-}
-
-.utilsPosition {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: $font12;
-    color: $fcolor3;
-    transition: $transitionTime;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 .utilsIcon {
@@ -23,17 +12,14 @@
 
 .home {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .add {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .profile {
     @extend .utilsPosition;
-    font-size: $font12;
 }
 
 .profile>p {

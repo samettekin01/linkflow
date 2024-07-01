@@ -58,7 +58,7 @@
 }
 
 .postDivContainer > input:focus, .postDivContainer > select:focus, .postInputDescription:focus {
-    background-color: $background2;
+    background-color: $background3;
 }
 
 .postInputDescription {
@@ -71,6 +71,7 @@
     border: none;
     border-bottom: 2px solid $background1;
     resize: none;
+    white-space: pre-line;
 }
 
 .postInputDescription::placeholder{
