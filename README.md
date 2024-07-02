@@ -1,7 +1,36 @@
+#
+### Language: English
+# LinkFlow
+A web platform inspired by the design of Instagram, LinkedIn, and Medium, where users can share and discover useful website links.
+
+## Demo
+https://linkflow.netlify.app/
+
+## Features
+- <b> User Registration:</b> Users can register to create and share posts.
+- <b> Post Management:</b> Add, edit, and delete posts.
+- <b> Comment Management:</b> Add, edit, and delete comments on posts.
+- <b> View Posts:</b> Posts can be viewed without registration.
+- <b> Search Functionality:</b> Search through posts (available now).
+- <b> Likes:</b> Like functionality
+
+## Technologies Used
+- <b> React:</b> Frontend framework for building user interfaces.
+- <b> TypeScript: </b>Typed superset of JavaScript.
+- <b> Sass/SCSS:</b> CSS preprocessor for styling.
+- <b> Bootstrap Icons: </b>Icons library.
+- <b> Formik: </b>Form management library.
+- <b> Firestore: </b>Database for storing posts and comments.
+- <b> Firebase Storage:</b> Storage solution for user-uploaded content.
+- <b> Firebase Auth:</b> Authentication for user registration and login.
+- <b> Figma:</b> Designed with Figma
+
+#
+### Language: Türkçe
 # LinkFlow
 Instagram, LinkedIn ve Medium tasarımından ilham alınarak oluşturulmuş, yararlı web sitelerinin linklerinin paylaşıldığı bir platform.
 
-# Demo
+## Demo
 https://linkflow.netlify.app/
 
 ## Özellikler
