@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore"
+import { addDoc, collection,  deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { ContentSliceTypes, PostData, PostState } from "../../../utils/types"
 import { db } from "../../../firebase/firebase"
 
@@ -15,17 +15,19 @@ const initialState: ContentSliceTypes | PostState = {
     currentPost: null,
     comment: [],
     commentStatus: "",
+    likesCount: 0,
+    likesCountStatus: ""
 }
 
-export const handleCommentsCollection = createAsyncThunk("comments", async (id: string) => {
-    const getComments = (await getDocs(query(
-        collection(db, "comments"),
-        where("commentsCollectionID", "==", id),
-        orderBy("createdAt", "desc"),
-        limit(10)
-    ))).docs.map(d => d.data())
-    return getComments
-})
+// export const handleCommentsCollection = createAsyncThunk("comments", async (id: string) => {
+//     const getComments = (await getDocs(query(
+//         collection(db, "comments"),
+//         where("commentsCollectionID", "==", id),
+//         orderBy("createdAt", "desc"),
+//         limit(10)
+//     ))).docs.map(d => d.data())
+//     return getComments
+// })
 
 
 export const handleComment = createAsyncThunk("commentsCollection", async (id: string) => {
@@ -46,8 +48,8 @@ export const setContent = createAsyncThunk("content", async (id: string | undefi
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    if(getContent.length === 0){
-        await deleteDoc(doc(db,"categoryId", `${id}`)).catch(e => console.log("Error deleting category: ", e))
+    if (getContent.length === 0) {
+        await deleteDoc(doc(db, "categoryId", `${id}`)).catch(e => console.log("Error deleting category: ", e))
     }
     return getContent
 })
@@ -82,6 +84,27 @@ export const searchContent = createAsyncThunk("search", async (text: string) => 
     return getSearch
 })
 
+export const handleLike = createAsyncThunk("likes", async (data: PostData) => {
+    const time = new Date().valueOf()
+    const addLike = await addDoc(collection(db, "likes"), {})
+    const like = await updateDoc(doc(db, "likes", addLike.id), {
+        createdAt: time,
+        createdBy: data?.createdBy,
+        createdName: data?.createdName,
+        postId: data?.postID,
+        likeId: addLike.id
+    })
+    return like
+})
+
+export const likesCount = createAsyncThunk("likesCount", async (id: string) => {
+    const likes = (await getCountFromServer(query(
+        collection(db, "likes"),
+        where("postId", "==", id)
+    ))).data().count
+    return likes
+})
+
 const contentSlice = createSlice({
     name: "content",
     initialState,
@@ -91,16 +114,16 @@ const contentSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(handleCommentsCollection.fulfilled, (state, action) => {
-            state.commentsCollection = action.payload
-            state.commentsCollectionStatus = "fulfilled"
-        })
-        builder.addCase(handleCommentsCollection.pending, state => {
-            state.commentsCollectionStatus = "pending"
-        })
-        builder.addCase(handleCommentsCollection.rejected, state => {
-            state.commentsCollectionStatus = "rejected"
-        })
+        // builder.addCase(handleCommentsCollection.fulfilled, (state, action) => {
+        //     state.commentsCollection = action.payload
+        //     state.commentsCollectionStatus = "fulfilled"
+        // })
+        // builder.addCase(handleCommentsCollection.pending, state => {
+        //     state.commentsCollectionStatus = "pending"
+        // })
+        // builder.addCase(handleCommentsCollection.rejected, state => {
+        //     state.commentsCollectionStatus = "rejected"
+        // })
         builder.addCase(setContent.fulfilled, (state, action) => {
             state.content = action.payload
             state.contentStatus = "fulfilled"
@@ -150,6 +173,16 @@ const contentSlice = createSlice({
         })
         builder.addCase(searchContent.rejected, state => {
             state.contentStatus = "rejected"
+        })
+        builder.addCase(likesCount.fulfilled, (state, action) => {
+            state.likesCount = action.payload
+            state.likesCountStatus = "fulfilled"
+        })
+        builder.addCase(likesCount.pending, state => {
+            state.likesCountStatus = "pending"
+        })
+        builder.addCase(likesCount.rejected, state => {
+            state.likesCountStatus = "rejected"
         })
     }
 })

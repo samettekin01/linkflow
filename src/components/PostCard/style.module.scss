@@ -145,7 +145,7 @@
 .contentTextContainer {
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin-top: 10px;
     padding-top: 20px;
     border-top: 1px solid $fcolor2;
     width: 100%;
@@ -194,6 +194,18 @@
     padding: 10px;
 }
 
+.moreButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    color: $fcolor2;
+}
+
+.moreButton:active {
+    color: $fcolor1;
+}
+
 .commentUtils {
     display: flex;
     justify-content: space-between;
@@ -239,7 +251,7 @@
 }
 
 .postUtils>span {
-    font-size: 1rem;
+    font-size: .7rem;
     margin-left: 5px;
 }
 

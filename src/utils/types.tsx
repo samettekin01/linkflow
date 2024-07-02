@@ -66,6 +66,8 @@ export interface ContentSliceTypes {
     currentPost: PostData | null
     comment: DocumentData | undefined
     commentStatus: string
+    likesCount: number
+    likesCountStatus: string
 }
 
 export interface IsOpen {
@@ -112,7 +114,7 @@ export interface PostData {
 }
 
 export interface PostState {
-    currentPost: PostData | null;
+    currentPost: PostData;
 }
 
 export interface CommentData {
