@@ -2,7 +2,7 @@ import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList } f
 import { auth, googleProvider } from "../../../firebase/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice";
@@ -16,6 +16,8 @@ const Menu: React.FC = () => {
 
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
     // const [search, setSearch] = useState<string>("")
+
+    const topicMenuRef = useRef<HTMLDivElement | null>(null)
 
     const login = async () => {
         if (!user) {
@@ -57,12 +59,22 @@ const Menu: React.FC = () => {
     // }
 
     useEffect(() => {
+        const handleOutsideClick = (e: MouseEvent) => {
+            if(topicMenuRef.current && !topicMenuRef.current.contains(e.target as Node)){
+                setIsOpenMenu(false)
+            }
+        }
+        if(isOpenMenu){
+            document.addEventListener("mousedown", handleOutsideClick)
+        }else{
+            document.removeEventListener("mousedown", handleOutsideClick)
+        }
         dispatch(handleUserSign())
-    }, [dispatch])
+    }, [dispatch, isOpenMenu])
 
     return (
         <div className={Styles.navBar}>
-            <div className={Styles.topicMenuContainer} onClick={() => setIsOpenMenu(!isOpenMenu)}>
+            <div className={Styles.topicMenuContainer} onClick={() => setIsOpenMenu(!isOpenMenu)} ref={topicMenuRef}>
                 <BsList className={Styles.topicsMenuButton} />
                 {isOpenMenu && <div className={Styles.topicMenu}>
                     <TopicsCard />
