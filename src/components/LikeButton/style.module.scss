@@ -1,0 +1,21 @@
+@import "../../styles/variable.scss";
+
+.heartContainer>button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
+    margin-top: 10px;
+    background-color: transparent;
+    border: none;
+    color: $fcolor2;
+    cursor: pointer;
+}
+
+.heart {
+    font-size: 1.2rem;
+}
+
+.fillHeart {
+    color: rgba(214, 0, 0, 0.788);
+}
