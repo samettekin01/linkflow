@@ -11,7 +11,6 @@ https://linkflow.netlify.app/
 - <b> Post Management:</b> Add, edit, and delete posts.
 - <b> Comment Management:</b> Add, edit, and delete comments on posts.
 - <b> View Posts:</b> Posts can be viewed without registration.
-- <b> Search Functionality:</b> Search through posts (available now).
 - <b> Likes:</b> Like functionality
 
 ## Technologies Used
