@@ -85,7 +85,7 @@ const Menu: React.FC = () => {
                         Add
                     </div>}
                     <div className={Styles.profile} onClick={login}>
-                        {user == null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
+                        {user === null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
                         {user ? user.displayName.split(" ")[0] : "Log in"}
                     </div>
                     {user &&

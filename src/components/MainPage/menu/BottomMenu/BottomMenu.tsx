@@ -5,6 +5,7 @@ import { setIsOpen } from "../../../redux/slice/stateSlice"
 import { signInWithPopup, signOut } from "firebase/auth"
 import { auth, googleProvider } from "../../../../firebase/firebase"
 import Styles from "./style.module.scss"
+import { handleUserSign } from "../../../redux/slice/userSlice"
 
 
 function BottomMenu() {
@@ -15,6 +16,7 @@ function BottomMenu() {
         if (!user) {
             try {
                 await signInWithPopup(auth, googleProvider)
+                dispatch(handleUserSign())
             } catch (error) {
                 console.log("Oturum açılırken bir hata oluştu: ", error)
             }
@@ -26,6 +28,7 @@ function BottomMenu() {
         if (user) {
             try {
                 await signOut(auth)
+                dispatch(handleUserSign())
             } catch (error) {
                 console.log("Oturum sonlandırılırken bir hata oluştu: ", error)
             }
