@@ -2,7 +2,7 @@ import { FormEvent, createRef, useCallback, useEffect, useRef, useState } from "
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
 import { setIsOpenEditComment, setIsOpenPost, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { BsArrowUpCircleFill, BsChat, BsX } from "react-icons/bs"
-import { DocumentData, addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore"
+import { DocumentData, addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, startAfter, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebase"
 import Styles from "./style.module.scss"
 import LikeButton from "../LikeButton/LikeButton"
@@ -42,7 +42,7 @@ function PostCard() {
         if (user) {
             if (comment) {
                 if (commentText) {
-                    const commentDoc = await addDoc(collection(db, "comments"), {
+                    const commentDoc = await addDoc(collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`), {
                         commentID: "",
                         createdAt: time || "",
                         commentsCollectionID: getPost?.commentsCollectionId || "",
@@ -54,10 +54,8 @@ function PostCard() {
                         updatedAt: 0 || "",
                         replies: {}
                     })
-                    await updateDoc(doc(db, "comments", commentDoc.id), { commentID: commentDoc.id })
-                    await updateDoc(doc(db, "commentsCollection", `${getPost?.commentsCollectionId}`), {
-                        [commentDoc.id]: getPost?.commentsCollectionId
-                    })
+                    await updateDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, commentDoc.id), { commentID: commentDoc.id })
+                    fetchComments()
                     setCommentText("")
                     setCommentStatus(false)
                 }
@@ -82,24 +80,26 @@ function PostCard() {
             } else {
                 if (editCommentText === "") return dispatch(setIsOpenSnackBar({ message: "Empty text area", status: true }))
                 dispatch(setIsOpenEditComment({ [id]: false }))
-                updateDoc(doc(db, "comments", id), {
+                updateDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, id), {
                     content: editCommentText,
                     updatedAt: new Date().valueOf()
                 })
                 setEditCommentText("")
             }
             commentRefs.current[id].current?.classList.remove(Styles.editComment)
+            fetchComments()
         }
     }
 
     const deleteComment = (id: string) => {
         if (window.confirm("Are you sure you want to delete this comment")) {
-            deleteDoc(doc(db, "comments", id))
+            deleteDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, id))
                 .then(() => dispatch(setIsOpenSnackBar({ message: "Comment deleted successfully", status: true })))
                 .catch(e => {
                     console.log("Error deleting comment: ", e)
                     dispatch(setIsOpenSnackBar({ message: "Error deleting comment", status: true }))
                 })
+            fetchComments()
         }
     }
 
@@ -115,8 +115,7 @@ function PostCard() {
 
     const commentsCollection = useCallback(async () => {
         const querySnapshot = await getDocs(query(
-            collection(db, "comments"),
-            where("commentsCollectionID", "==", getPost?.commentsCollectionId),
+            collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`),
             orderBy("createdAt", "desc"),
             limit(10)
         ))
@@ -129,8 +128,7 @@ function PostCard() {
         if (!lastVisible) return { getComments: [], lastVisible: null }
 
         const querySnapshot = await getDocs(query(
-            collection(db, "comments"),
-            where("commentsCollectionID", "==", getPost?.commentsCollectionId),
+            collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`),
             orderBy("createdAt", "desc"),
             startAfter(lastVisible),
             limit(10)
@@ -148,6 +146,14 @@ function PostCard() {
         setLastVisible(newLastVisible)
         setLoading(false)
     }
+
+    const fetchComments = useCallback(async () => {
+        setLoading(true)
+        const { getComments, lastVisible } = await commentsCollection()
+        setComments(getComments)
+        setLastVisible(lastVisible)
+        setLoading(false)
+    }, [commentsCollection])
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -177,16 +183,8 @@ function PostCard() {
 
         window.addEventListener("resize", handleWindowResize)
 
-        const fetchComments = async () => {
-            setLoading(true)
-            const { getComments, lastVisible } = await commentsCollection()
-            setComments(getComments)
-            setLastVisible(lastVisible)
-            setLoading(false)
-        }
-
         fetchComments()
-    }, [isOpen, dispatch, getPost, commentsCollection])
+    }, [isOpen, dispatch, getPost, fetchComments])
 
     return (
         <div className={Styles.postCardContainer}>

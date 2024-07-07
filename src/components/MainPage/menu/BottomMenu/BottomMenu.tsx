@@ -1,12 +1,10 @@
 import { BsBoxArrowLeft, BsHouseFill, BsPersonFill, BsPlusCircleFill } from "react-icons/bs"
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store"
-import { recentContent, setContent, setUserContent } from "../../../redux/slice/contentSlice"
+import { recentContent, setUserContent } from "../../../redux/slice/contentSlice"
 import { setIsOpen } from "../../../redux/slice/stateSlice"
 import { signInWithPopup, signOut } from "firebase/auth"
-import { handleUserSign } from "../../../redux/slice/userSlice"
 import { auth, googleProvider } from "../../../../firebase/firebase"
 import Styles from "./style.module.scss"
-import { useEffect } from "react"
 
 
 function BottomMenu() {
@@ -17,12 +15,10 @@ function BottomMenu() {
         if (!user) {
             try {
                 await signInWithPopup(auth, googleProvider)
-                dispatch(handleUserSign())
             } catch (error) {
                 console.log("Oturum açılırken bir hata oluştu: ", error)
             }
         } else {
-            dispatch(setContent(""))
             getUserContent(user.uid)
         }
     }
@@ -30,7 +26,6 @@ function BottomMenu() {
         if (user) {
             try {
                 await signOut(auth)
-                dispatch(handleUserSign())
             } catch (error) {
                 console.log("Oturum sonlandırılırken bir hata oluştu: ", error)
             }
@@ -40,10 +35,6 @@ function BottomMenu() {
     const getUserContent = (id: string | undefined) => {
         id && dispatch(setUserContent(id))
     }
-
-    useEffect(() => {
-        dispatch(handleUserSign())
-    }, [dispatch])
 
     return (
         <div className={Styles.utilsBottom}>

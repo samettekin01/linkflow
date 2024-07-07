@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react"
 function LikeButton() {
     const getPost = useAppSelector(state => state.content.currentPost)
     const likes = useAppSelector(state => state.content.likesCount)
+    const user = useAppSelector(state => state.user.user)
 
     const [buttonStatus, setButtonStatus] = useState<boolean>(false)
     const [likeStatus, setLikeStatus] = useState<boolean>(false)
@@ -16,13 +17,11 @@ function LikeButton() {
     const dispatch = useAppDispatch()
 
     const userLikeStatus = useCallback(async () => {
-        if (getPost) {
+        if (getPost && user) {
             const getLike = (await getDocs(query(
-                collection(db, "likes"),
-                where("createdBy", "==", getPost.createdBy),
-                where("postId", "==", getPost.postID)
-            ))).docs.map(d => ({ id: d.id, ...d.data() }))
-
+                collection(db, `likesCollection/${getPost.likesCollectionId}/likes`),
+                where("createdBy", "==", user?.uid)
+            ))).docs.map(d => d.data())
             if (getLike.length > 0) {
                 setUserLike(getLike[0])
                 setLikeStatus(true)
@@ -32,30 +31,30 @@ function LikeButton() {
             }
             setButtonStatus(false)
         }
-    }, [getPost])
-
-    useEffect(() => {
-        userLikeStatus()
-        getPost && dispatch(likesCount(getPost?.postID))
-    }, [getPost, userLikeStatus, dispatch])
+    }, [getPost, user])
 
     const currentLike = async () => {
-        if (getPost) {
+        if (getPost && user) {
             setButtonStatus(true)
-            await dispatch(handleLike(getPost))
+            await dispatch(handleLike({ data: getPost, user: user }))
             await userLikeStatus()
-            getPost && await dispatch(likesCount(getPost?.postID))
+            getPost && await dispatch(likesCount(getPost?.likesCollectionId))
         }
     }
 
     const deleteLike = async () => {
         if (userLike) {
-            await deleteDoc(doc(db, "likes", userLike.id))
+            await deleteDoc(doc(db, `likesCollection/${getPost?.likesCollectionId}/likes`, userLike.likeId))
             setButtonStatus(true)
             await userLikeStatus()
-            getPost && await dispatch(likesCount(getPost?.postID))
+            getPost && await dispatch(likesCount(getPost?.likesCollectionId))
         }
     }
+
+    useEffect(() => {
+        userLikeStatus()
+        getPost && dispatch(likesCount(getPost?.likesCollectionId))
+    }, [getPost, userLikeStatus, dispatch])
 
     return (
         <div className={Styles.heartContainer}>

@@ -2,13 +2,13 @@ import { useAppDispatch, useAppSelector } from "../../redux/store/store"
 import { setIsOpenPost } from "../../redux/slice/stateSlice"
 import { recentContent, setCurrentPost } from "../../redux/slice/contentSlice"
 import PostUtilsMenu from "../../PostUtilsMenu/PostUtilsMenu"
-import { DocumentData } from "firebase/firestore"
 import ShareCard from "../body/ShareCard/ShareCard"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
 import LinkCard from "../body/linkCard/LinkCard"
-import { useEffect } from "react"
-import Styles from "./style.module.scss"
 import { PostData } from "../../../utils/types"
+import Styles from "./style.module.scss"
+import { useEffect } from "react"
+import { OrbitProgress } from "react-loading-indicators"
 
 function Content() {
     const dispatch = useAppDispatch()
@@ -22,14 +22,15 @@ function Content() {
 
     useEffect(() => {
         dispatch(recentContent())
-    }, [dispatch])
+    },[dispatch])
+
     return (
         <div className={Styles.body}>
             <div className={Styles.bodyContainer}>
                 {user ? <ShareCard /> : ""}
                 <div className={Styles.contentContainer}>
                     {
-                        content ? content.map((data: DocumentData) =>
+                        content && content.length > 0 ? content.map((data: PostData) =>
                             <div key={data.postID} className={Styles.linkCardContainer}>
                                 {data.createdBy === user?.uid &&
                                     <div className={Styles.utilsMenu}>
@@ -40,7 +41,7 @@ function Content() {
                                 }
                                 <LinkCard data={data} onClick={handlePost} />
                             </div>)
-                            : "...Loading"
+                            : <OrbitProgress variant="track-disc" color="#880085" size="medium" text="loading..."/>
                     }
                 </div>
             </div>

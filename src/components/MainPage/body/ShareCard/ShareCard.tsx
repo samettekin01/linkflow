@@ -15,7 +15,7 @@ function ShareCard() {
                 />
                 <span>{user?.displayName}</span>
             </div>
-            <input className={Styles.shareInput} type="button" value="Share Link" onClick={() => dispatch(setIsOpen(true))} />
+            <button className={Styles.shareInput} onClick={() => dispatch(setIsOpen(true))} >Share Link</button>
         </div>
     )
 }

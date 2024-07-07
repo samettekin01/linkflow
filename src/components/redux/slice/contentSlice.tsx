@@ -1,11 +1,11 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { addDoc, collection,  deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore"
-import { ContentSliceTypes, PostData, PostState } from "../../../utils/types"
+import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { ContentSliceTypes, PostData, PostState, UserInformations } from "../../../utils/types"
 import { db } from "../../../firebase/firebase"
 
 const initialState: ContentSliceTypes | PostState = {
-    commentsCollection: [],
-    commentsCollectionStatus: "",
+    userLikesCollection: [],
+    userLikesCollectionStatus: "",
     user: [],
     userStatus: "",
     post: [],
@@ -19,17 +19,6 @@ const initialState: ContentSliceTypes | PostState = {
     likesCountStatus: ""
 }
 
-// export const handleCommentsCollection = createAsyncThunk("comments", async (id: string) => {
-//     const getComments = (await getDocs(query(
-//         collection(db, "comments"),
-//         where("commentsCollectionID", "==", id),
-//         orderBy("createdAt", "desc"),
-//         limit(10)
-//     ))).docs.map(d => d.data())
-//     return getComments
-// })
-
-
 export const handleComment = createAsyncThunk("commentsCollection", async (id: string) => {
     const comment = (await getDoc(doc(db, "commentsCollection", id))).data()
     let getComment: string[] = []
@@ -41,23 +30,22 @@ export const handleComment = createAsyncThunk("commentsCollection", async (id: s
     return getComment
 })
 
-export const setContent = createAsyncThunk("content", async (id: string | undefined) => {
+export const setContent = createAsyncThunk("content", async ({ postsCollectionId, categoryId }: { postsCollectionId: string, categoryId: string }) => {
     const getContent = (await getDocs(query(
-        collection(db, "posts"),
-        where("categoryId", "==", id),
+        collection(db, `postsCollection/${postsCollectionId}/posts`),
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    if (getContent.length === 0) {
-        await deleteDoc(doc(db, "categoryId", `${id}`)).catch(e => console.log("Error deleting category: ", e))
+    if (getContent.length === 0 && postsCollectionId) {
+        await deleteDoc(doc(db, "categoryId", categoryId)).catch(e => console.log("Error deleting category: ", e))
+        await deleteDoc(doc(db, `postsCollection`, postsCollectionId))
     }
     return getContent
 })
 
 export const setUserContent = createAsyncThunk("userContent", async (id: string | undefined) => {
     const getContent = (await getDocs(query(
-        collection(db, "posts"),
-        where("createdBy", "==", id),
+        collection(db, `users/${id}/posts`),
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
@@ -66,43 +54,47 @@ export const setUserContent = createAsyncThunk("userContent", async (id: string 
 
 export const recentContent = createAsyncThunk("recentContent", async () => {
     const getContent = (await getDocs(query(
-        collection(db, "posts"),
+        collection(db, `postsCollection`),
         orderBy("createdAt", "desc"),
         limit(10)
     ))).docs.map(d => d.data())
-    return getContent
+    const getPosts = [];
+    for (const d of getContent) {
+        const subDoc = await getDoc(doc(db, `postsCollection/${d.postsCollectionId}/posts`, d.postID));
+        getPosts.push(subDoc.data());
+    }
+    return getPosts
 })
 
-export const searchContent = createAsyncThunk("search", async (text: string) => {
-    const lowerCaseText = text.toLowerCase();
-    const getSearch = (await getDocs(query(
-        collection(db, "posts"),
-        where("content.title", "array-contains", lowerCaseText),
-        orderBy("createdAt", "desc"),
-        limit(10)
-    ))).docs.map(d => d.data())
-    return getSearch
-})
-
-export const handleLike = createAsyncThunk("likes", async (data: PostData) => {
+export const handleLike = createAsyncThunk("likes", async ({ data, user }: { data: PostData, user: UserInformations }) => {
     const time = new Date().valueOf()
-    const addLike = await addDoc(collection(db, "likes"), {})
-    const like = await updateDoc(doc(db, "likes", addLike.id), {
+    const addLike = await addDoc(collection(db, `likesCollection/${data.likesCollectionId}/likes`), {})
+    const like = await updateDoc(doc(db, `likesCollection/${data.likesCollectionId}/likes`, addLike.id), {
         createdAt: time,
-        createdBy: data?.createdBy,
-        createdName: data?.createdName,
+        createdBy: user.uid,
+        createdName: user.displayName,
         postId: data?.postID,
         likeId: addLike.id
     })
+
     return like
 })
 
 export const likesCount = createAsyncThunk("likesCount", async (id: string) => {
     const likes = (await getCountFromServer(query(
-        collection(db, "likes"),
-        where("postId", "==", id)
+        collection(db, `likesCollection/${id}/likes`)
     ))).data().count
     return likes
+})
+
+export const userLikeStatusAction = createAsyncThunk("likes", async ({ data, user }: { data: PostData, user: UserInformations }) => {
+    if (data) {
+        const getLike = (await getDocs(query(
+            collection(db, `likesCollection/${data.likesCollectionId}/likes`),
+            where("createdBy", "==", user?.uid)
+        ))).docs.map(d => d.data())
+        return getLike
+    }
 })
 
 const contentSlice = createSlice({
@@ -114,16 +106,16 @@ const contentSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // builder.addCase(handleCommentsCollection.fulfilled, (state, action) => {
-        //     state.commentsCollection = action.payload
-        //     state.commentsCollectionStatus = "fulfilled"
-        // })
-        // builder.addCase(handleCommentsCollection.pending, state => {
-        //     state.commentsCollectionStatus = "pending"
-        // })
-        // builder.addCase(handleCommentsCollection.rejected, state => {
-        //     state.commentsCollectionStatus = "rejected"
-        // })
+        builder.addCase(userLikeStatusAction.fulfilled, (state, action) => {
+            state.userLikesCollection = action.payload
+            state.userLikesCollectionStatus = "fulfilled"
+        })
+        builder.addCase(userLikeStatusAction.pending, state => {
+            state.userLikesCollectionStatus = "pending"
+        })
+        builder.addCase(userLikeStatusAction.rejected, state => {
+            state.userLikesCollectionStatus = "rejected"
+        })
         builder.addCase(setContent.fulfilled, (state, action) => {
             state.content = action.payload
             state.contentStatus = "fulfilled"
@@ -163,16 +155,6 @@ const contentSlice = createSlice({
         })
         builder.addCase(handleComment.rejected, state => {
             state.commentStatus = "rejected"
-        })
-        builder.addCase(searchContent.fulfilled, (state, action) => {
-            state.content = action.payload
-            state.contentStatus = "fulfilled"
-        })
-        builder.addCase(searchContent.pending, state => {
-            state.contentStatus = "pending"
-        })
-        builder.addCase(searchContent.rejected, state => {
-            state.contentStatus = "rejected"
         })
         builder.addCase(likesCount.fulfilled, (state, action) => {
             state.likesCount = action.payload

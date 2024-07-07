@@ -3,13 +3,16 @@ import { setContent } from "../../../redux/slice/contentSlice"
 import Styles from "./style.module.scss"
 import { useEffect } from "react"
 import { handleCategory } from "../../../redux/slice/categoriesSlice"
-import { DocumentData } from "firebase/firestore"
+import { CategoryTypes } from "../../../../utils/types"
+import { OrbitProgress } from "react-loading-indicators"
 
 function TopicsCard() {
     const categories = useAppSelector(state => state.categories.category)
+
     const dispatch = useAppDispatch()
-    const handleGetCategory = async (id: string) => {
-        dispatch(setContent(id))
+    const handleGetCategory = (id: string, categoryId: string) => {
+        dispatch(setContent({ postsCollectionId: id, categoryId: categoryId}))
+        dispatch(handleCategory())
     }
 
     useEffect(() => {
@@ -20,17 +23,17 @@ function TopicsCard() {
         <div className={Styles.topicsContainer}>
             <div className={Styles.topicsContainerNotch}></div>
             <div className={Styles.topicTitle}><h1>Topics</h1></div>
-            {categories ?
-                categories.map((data: DocumentData) =>
+            {categories && categories.length > 0 ?
+                categories.map((data: CategoryTypes) =>
                     <div
                         key={data.categoryName}
                         className={Styles.topics}
-                        onClick={() => handleGetCategory(data.categoryId)}
+                        onClick={() => handleGetCategory(data.postsCollectionId, data.categoryId)}
                     >
                         {data.categoryName}
                     </div>
                 )
-                : "...Loading"}
+                : <OrbitProgress variant="track-disc" color="#880085" size="small" text="loading..."/>}
         </div >
     )
 }

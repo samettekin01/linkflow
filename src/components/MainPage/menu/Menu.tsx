@@ -6,16 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import { handleUserSign } from "../../redux/slice/userSlice";
 import Styles from "./style.module.scss";
 import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice";
-import { recentContent, setContent, setUserContent } from "../../redux/slice/contentSlice";
+import { recentContent, setUserContent } from "../../redux/slice/contentSlice";
 import TopicsCard from "../body/TopicsCard/TopicsCard";
 import Logo from "../../../styles/Logo";
 
 const Menu: React.FC = () => {
     const user = useAppSelector(state => state.user.user)
+
     const dispatch = useAppDispatch()
 
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
-    // const [search, setSearch] = useState<string>("")
 
     const topicMenuRef = useRef<HTMLDivElement | null>(null)
 
@@ -29,7 +29,6 @@ const Menu: React.FC = () => {
                 dispatch(setIsOpenSnackBar({ message: "An error occurred while logging in:", status: true }))
             }
         } else {
-            dispatch(setContent(""))
             getUserContent(user.uid)
         }
     }
@@ -49,27 +48,18 @@ const Menu: React.FC = () => {
         id && dispatch(setUserContent(id))
     }
 
-    // const handleSubmit = (e: any) => {
-    //     e.preventDefault()
-    //     if(search){
-    //         dispatch(searchContent(search))
-    //     }else{
-    //         dispatch(recentContent())
-    //     }
-    // }
-
     useEffect(() => {
+        dispatch(handleUserSign())
         const handleOutsideClick = (e: MouseEvent) => {
-            if(topicMenuRef.current && !topicMenuRef.current.contains(e.target as Node)){
+            if (topicMenuRef.current && !topicMenuRef.current.contains(e.target as Node)) {
                 setIsOpenMenu(false)
             }
         }
-        if(isOpenMenu){
+        if (isOpenMenu) {
             document.addEventListener("mousedown", handleOutsideClick)
-        }else{
+        } else {
             document.removeEventListener("mousedown", handleOutsideClick)
         }
-        dispatch(handleUserSign())
     }, [dispatch, isOpenMenu])
 
     return (
@@ -85,17 +75,6 @@ const Menu: React.FC = () => {
                     <Logo />
                     <div className={Styles.logo}>LinkFlow</div>
                 </div>
-                {/* <div className={Styles.searchDiv}>
-                    <BsSearch className={Styles.searchButton} />
-                    <form className={Styles.searchForm} onSubmit={handleSubmit}>
-                        <input
-                            className={Styles.searchInput}
-                            onChange={e => setSearch(e.target.value)}
-                            type="search"
-                            placeholder="Search"
-                        />
-                    </form>
-                </div> */}
                 <div className={Styles.utils}>
                     <div className={Styles.home} onClick={() => dispatch(recentContent())}>
                         <BsHouseFill className={Styles.utilsIcon} />

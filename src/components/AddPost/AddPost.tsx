@@ -1,15 +1,16 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { setIsOpen, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { DocumentData, addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, setDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
-import { PostFormikValues } from "../../utils/types";
+import { CategoryTypes, PostData, PostFormikValues } from "../../utils/types";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
+import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
 import { recentContent } from "../redux/slice/contentSlice";
 import Styles from "./style.module.scss"
-import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
+import { OrbitProgress } from "react-loading-indicators";
 
 
 export const isValidURL = (url: string) => {
@@ -27,15 +28,18 @@ function AddPost() {
 
     const categoriesID = process.env.REACT_APP_CATEGORIES_ID
 
-    const postRef = collection(db, "posts")
+    const postsCollectionRef = collection(db, "postsCollection")
     const commentsRef = collection(db, "commentsCollection")
     const categoryRef = collection(db, "categoryId")
+    const likesCollectionRef = collection(db, "likesCollection")
     const categoriesRef = doc(db, "categories", `${categoriesID}`)
 
     const postContainer = useRef<HTMLDivElement | null>(null)
     const titleRef = useRef<HTMLInputElement | null>(null)
+
     const [allowedFiles, setAllowedFiles] = useState<string>("")
     const [submitStatus, setSubmitStatus] = useState<boolean>(false)
+    const [categoryData, setCategoryData] = useState<DocumentData>()
 
 
     const time = new Date().valueOf()
@@ -49,32 +53,67 @@ function AddPost() {
         newCategory: "",
         img: null
     }
-    const createPostRef = async (post: object) => {
-        const postId = await addDoc(postRef, {})
-        await updateDoc(doc(db, "posts", postId.id), { ...post, postID: postId.id })
+
+    const createPostRef = async (post: object, postsCollectionId: string) => {
+        console.log("post oluşturuluyor", post, " ", postsCollectionId)
+        const postId = await addDoc(collection(db, `postsCollection/${postsCollectionId}/posts`), post)
+        await updateDoc(doc(db, `postsCollection/${postsCollectionId}/posts`, postId.id), { postID: postId.id })
         return postId.id
     }
 
+    const createPostCollectionRef = async () => {
+        console.log("postCollection oluşturuluyor")
+        const postsCollection = await addDoc(postsCollectionRef, {})
+        return postsCollection.id
+    }
+
     const createCommentRef = async () => {
+        console.log("commentCollection oluşturuluyor")
         const postCommentId = await addDoc(commentsRef, {})
         return postCommentId.id
     }
 
-    const createCategoryRef = async (categoryName: string, postId: string) => {
+    const createLikeCollecitonRef = async () => {
+        console.log("likeCollection oluşturuluyor")
+        const likesCollection = await addDoc(likesCollectionRef, {})
+        return likesCollection.id
+    }
+
+    const createCategoryRef = async (categoryName: string, postId: string, postsCollectionId: string) => {
+        console.log("Category oluşturuluyor", categoryName, " postId: ", postId, "postsCollectionId: ", postsCollectionId)
         const postCreateId = await addDoc(categoryRef, {
             categoryName: categoryName,
             createdAt: time,
             createdBy: user?.uid,
             createdName: user?.displayName,
         })
-        await updateDoc(doc(db, "categoryId", postCreateId.id), {categoryId: postCreateId.id})
+        console.log(postsCollectionId)
+        await updateDoc(doc(db, "categoryId", postCreateId.id), {
+            categoryId: postCreateId.id,
+            postsCollectionId: postsCollectionId
+        })
+        console.log("categoryId güncellendi.")
         await updateDoc(categoriesRef, {
             [categoryName]: postCreateId.id
         })
-        updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
-        dispatch(recentContent())
-        return postCreateId.id
+        console.log("categories güncellendi")
+        await updateDoc(doc(db, `postsCollection/${postsCollectionId}/posts`, postId), { categoryId: postCreateId.id, postsCollectionId: postsCollectionId })
+        console.log("post güncellendi")
+        return { postsCollectionId, postCreateId }
     }
+
+    const handleUserPost = async (post: PostData, postsCollectionId: string, categoryId: string, postId: string) => {
+        await setDoc(doc(db, `users/${user?.uid}/posts`, postId), post)
+        console.log("kullanıcı postu oluştuluyor.")
+        if (user) {
+            await updateDoc(doc(db, `users/${user?.uid}/posts`, postId), {
+                postsCollectionId: postsCollectionId,
+                categoryId: categoryId,
+                postID: postId
+            })
+        }
+    }
+
 
     const dowloadURL = async (postId: string) => {
         if (values.img) {
@@ -82,6 +121,7 @@ function AddPost() {
                 const storageRef = ref(storage, `photos/${postId}`)
                 const snapshot = await uploadBytes(storageRef, values.img)
                 const downdloadURL = await getDownloadURL(snapshot.ref)
+                console.log("resim yüklendi.")
                 return downdloadURL
             }
         }
@@ -90,35 +130,61 @@ function AddPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
-            if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
-            setSubmitStatus(true)
-            const commentsCollectionId = await createCommentRef()
-            const getURL = await dowloadURL(commentsCollectionId)
-            const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
-            const content = {
-                commentsCollectionId: commentsCollectionId,
-                createdBy: user?.uid,
-                createdName: user?.displayName,
-                userImg: user?.photoURL,
-                createdAt: time,
-                updateAt: 0,
-                category: category,
-                categoryId: getCategories[0][values.selectedCategory] || "",
-                content: {
-                    title: values.title,
-                    link: values.link,
-                    description: values.description,
-                    img: getURL
+            if (user) {
+                if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
+                console.log("oluşturma başladı")
+                setSubmitStatus(true)
+                dispatch(setIsOpenSnackBar({ message: "Please wait, Your post is being prepared...", status: true }))
+                const commentsCollectionId = await createCommentRef()
+                const likesCollectionId = await createLikeCollecitonRef()
+                const getURL = await dowloadURL(commentsCollectionId)
+                const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
+                const newPostsCollectionId = values.selectedCategory === "Other" ? await createPostCollectionRef() : categoryData && categoryData.postsCollectionId
+                console.log("commentsCollectionId, likesCollectionId, getURL, category oluşturuldu.")
+                if (getURL && newPostsCollectionId) {
+                    const content: PostData = {
+                        commentsCollectionId: commentsCollectionId,
+                        likesCollectionId: likesCollectionId,
+                        postsCollectionId: newPostsCollectionId || "",
+                        createdBy: user?.uid,
+                        createdName: user?.displayName,
+                        userImg: user?.photoURL,
+                        postID: "",
+                        createdAt: time,
+                        updatedAt: 0,
+                        category: category,
+                        categoryId: getCategories[0][values.selectedCategory] || "",
+                        content: {
+                            title: values.title,
+                            link: values.link,
+                            description: values.description,
+                            img: getURL
+                        }
+                    }
+                    const postId = await createPostRef(content, newPostsCollectionId)
+                    if (values.selectedCategory === "Other") {
+                        if (newPostsCollectionId) {
+                            console.log("Other Seçildi")
+                            const { postsCollectionId, postCreateId } = await createCategoryRef(values.newCategory, postId, newPostsCollectionId)
+                            handleUserPost(content, postsCollectionId, postCreateId.id, postId)
+                        }
+                    } else {
+                        console.log("kategori seçildi: ", newPostsCollectionId, " Id: ", newPostsCollectionId)
+                        handleUserPost(content, newPostsCollectionId, getCategories[0][values.selectedCategory], postId)
+                    }
+                    await updateDoc(doc(db, "postsCollection", newPostsCollectionId), {
+                        createdAt: time,
+                        postID: postId,
+                        postsCollectionId: newPostsCollectionId
+                    })
+                    console.log("oluşturma bitti")
+                    dispatch(recentContent())
+                    dispatch(setIsOpen(false))
+                    setSubmitStatus(false)
+                    dispatch(setIsOpenSnackBar({ message: "Your post has been added", status: true }))
                 }
             }
-            const postId = await createPostRef(content);
-            if (values.selectedCategory === "Other") {
-                await createCategoryRef(values.newCategory, postId)
-            }
-            dispatch(recentContent())
-            setSubmitStatus(false)
-            dispatch(setIsOpen(false))
-            dispatch(setIsOpenSnackBar({ message: "Post added", status: true }))
+            dispatch(handleCategory())
         }
     })
 
@@ -159,13 +225,17 @@ function AddPost() {
                     />
                     <select
                         name="selectedCategory"
-                        onChange={handleChange}
+                        onChange={e => {
+                            handleChange(e)
+                            const selectedCategory = getCategory && getCategory.find((data: CategoryTypes) => data.categoryName === e.target.value)
+                            selectedCategory && setCategoryData(selectedCategory)
+                        }}
                         value={values.selectedCategory}
                         required
                     >
                         <option value="">Select Category</option>
-                        {getCategory && getCategory.map((data: DocumentData) =>
-                            <option key={data.categoryName} value={data.categoryName} >{data.categoryName}</option>
+                        {getCategory && getCategory.map((data: CategoryTypes) =>
+                            <option key={data.categoryId} value={data.categoryName}>{data.categoryName}</option>
                         )}
                         <option value="Other">Other</option>
                     </select>
@@ -218,13 +288,13 @@ function AddPost() {
                         required
                     />
                     <div className={Styles.postButtonDiv}>
-                        <input
+                        {submitStatus ? <OrbitProgress variant="track-disc" color="#880085" size="small" text="pending..." /> : <input
                             name="img"
                             type="submit"
                             className={Styles.postButton}
                             value="Done"
                             disabled={submitStatus}
-                        />
+                        />}
                     </div>
                 </form>
             </div>

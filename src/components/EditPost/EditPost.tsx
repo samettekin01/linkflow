@@ -1,16 +1,17 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { PostFormikValues } from "../../utils/types";
+import { CategoryTypes, PostData, PostFormikValues } from "../../utils/types";
 import { setIsOpenEditPost, setIsOpenSnackBar } from "../redux/slice/stateSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../firebase/firebase";
-import { DocumentData, addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import { useFormik } from "formik";
 import { BsX } from "react-icons/bs";
 import Styles from "./style.module.scss";
 import { setUserContent } from "../redux/slice/contentSlice";
 import { isValidURL } from "../AddPost/AddPost";
 import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
+import { OrbitProgress } from "react-loading-indicators";
 
 function EditPost() {
     const dispatch = useAppDispatch();
@@ -21,16 +22,18 @@ function EditPost() {
     const isOpen = useAppSelector(state => state.post.getEditPost)
     const postContent = useAppSelector(state => state.content.currentPost)
 
-
     const categoriesID = process.env.REACT_APP_CATEGORIES_ID
 
     const categoriesRef = doc(db, "categories", `${categoriesID}`)
     const categoryRef = collection(db, "categoryId")
+    const postsCollectionRef = collection(db, "postsCollection")
 
     const editPostContainer = useRef<HTMLDivElement | null>(null)
     const titleRef = useRef<HTMLInputElement | null>(null)
+
     const [allowedFiles, setAllowedFiles] = useState<string>("")
     const [submitStatus, setSubmitStatus] = useState<boolean>(false)
+    const [categoryData, setCategoryData] = useState<CategoryTypes>()
 
     const time = new Date().valueOf()
 
@@ -44,19 +47,41 @@ function EditPost() {
         img: null
     }
 
-    const createCategoryRef = async (categoryName: string, postId: string) => {
+    const createPostCollectionRef = async () => {
+        console.log("postCollection oluşturuluyor")
+        const postsCollection = await addDoc(postsCollectionRef, {})
+        return postsCollection.id
+    }
+
+    const createCategoryRef = async (categoryName: string, content: PostData) => {
+        const currentPostsCollection = await createPostCollectionRef()
         const postCreateId = await addDoc(categoryRef, {
             categoryName: categoryName,
             createdAt: time,
             createdBy: user?.uid,
             createdName: user?.displayName,
+            postsCollectionId: currentPostsCollection
         })
-        await updateDoc(doc(db, "categoryId", postCreateId.id), {categoryId: postCreateId.id})
+        await updateDoc(doc(db, "categoryId", postCreateId.id), { categoryId: postCreateId.id })
         await updateDoc(categoriesRef, {
             [categoryName]: postCreateId.id
         })
-        updateDoc(doc(db, "posts", postId), { categoryId: postCreateId.id })
+        await setDoc(doc(db, `postsCollection/${currentPostsCollection}/posts`, `${postContent?.postID}`), { ...content, categoryId: postCreateId.id, postsCollectionId: currentPostsCollection })
+        await updateDoc(doc(db, `users/${postContent?.createdBy}/posts`, `${postContent?.postID}`), { categoryId: postCreateId.id, postsCollectionId: currentPostsCollection })
+        await deleteDoc(doc(db, `postsCollection/${postContent?.postsCollectionId}/posts`, `${postContent?.postID}`))
         return postCreateId.id
+    }
+
+    const changeCategory = async (content: PostData) => {
+        if (categoryData) {
+            await setDoc(doc(db, `postsCollection/${categoryData.postsCollectionId}/posts`, `${postContent?.postID}`), {
+                ...content,
+                categoryId: categoryData.categoryId,
+                category: categoryData.categoryName,
+                postsCollectionId: categoryData.postsCollectionId
+            })
+            await deleteDoc(doc(db, `postsCollection/${postContent?.postsCollectionId}/posts`, `${postContent?.postID}`))
+        }
     }
 
     const dowloadURL = async (postId: string | undefined) => {
@@ -73,33 +98,43 @@ function EditPost() {
     const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
         initialValues,
         onSubmit: async (values) => {
-            if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
-            setSubmitStatus(true)
-            const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
-            const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)
-            const content = {
-                commentsCollectionId: postContent?.commentsCollectionId,
-                createdBy: postContent?.createdBy,
-                createdName: postContent?.createdName,
-                userImg: postContent?.userImg,
-                createdAt: postContent?.createdAt,
-                updatedAt: time,
-                category: category || postContent?.category,
-                categoryId: getCategories[0][values.selectedCategory] || postContent?.categoryId,
-                content: {
-                    title: values.title,
-                    link: values.link,
-                    description: values.description,
-                    img: getURL || postContent?.content.img
+            if (postContent) {
+                if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
+                setSubmitStatus(true)
+                const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
+                const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)
+                const content: PostData = {
+                    commentsCollectionId: `${postContent?.commentsCollectionId}`,
+                    likesCollectionId: `${postContent?.likesCollectionId}`,
+                    postsCollectionId: `${postContent?.postsCollectionId}`,
+                    createdBy: `${postContent?.createdBy}`,
+                    createdName: `${postContent?.createdName}`,
+                    userImg: `${postContent?.userImg}`,
+                    postID: postContent.postID,
+                    createdAt: postContent?.createdAt,
+                    updatedAt: time,
+                    category: category || `${postContent?.category}`,
+                    categoryId: getCategories[0][values.selectedCategory] || `${postContent?.categoryId}`,
+                    content: {
+                        title: values.title,
+                        link: values.link,
+                        description: values.description,
+                        img: getURL || `${postContent?.content.img}`
+                    }
                 }
+                await updateDoc(doc(db, `postsCollection/${postContent?.postsCollectionId}/posts`, `${postContent?.postID}`), { ...content })
+                await updateDoc(doc(db, `users/${postContent.createdBy}/posts`, `${postContent?.postID}`), { ...content })
+                if (values.selectedCategory !== postContent.category) {
+                    await changeCategory(content)
+                }
+                if (values.selectedCategory === "Other") {
+                    await createCategoryRef(values.newCategory, content)
+                }
+                setSubmitStatus(false)
+                dispatch(setUserContent(postContent?.createdBy))
+                dispatch(setIsOpenEditPost(false))
             }
-            updateDoc(doc(db, "posts", `${postContent?.postID}`), content)
-            if (values.selectedCategory === "Other") {
-                await createCategoryRef(values.newCategory, `${postContent?.postID}`)
-            }
-            setSubmitStatus(false)
-            dispatch(setUserContent(postContent?.createdBy))
-            dispatch(setIsOpenEditPost(false))
+            dispatch(handleCategory())
         }
     })
 
@@ -139,11 +174,15 @@ function EditPost() {
                     />
                     <select
                         name="selectedCategory"
-                        onChange={handleChange}
+                        onChange={e => {
+                            handleChange(e)
+                            const selectedCategory = getCategory && getCategory.find((data: CategoryTypes) => data.categoryName === e.target.value)
+                            selectedCategory && setCategoryData(selectedCategory)
+                        }}
                         value={values.selectedCategory}
                     >
                         <option value="">Select Category</option>
-                        {getCategory && getCategory.map((data: DocumentData) =>
+                        {getCategory && getCategory.map((data: CategoryTypes) =>
                             <option key={data.categoryName} value={data.categoryName} >{data.categoryName}</option>
                         )}
                         <option value="Other">Other</option>
@@ -192,13 +231,13 @@ function EditPost() {
                         }}
                     />
                     <div className={Styles.editPostButtonDiv}>
-                        <input
+                        {submitStatus ? <OrbitProgress variant="track-disc" color="#880085" size="small" text="pending..." /> : <input
                             name="img"
                             type="submit"
-                            className={Styles.editPostButton}
+                            className={Styles.postButton}
                             value="Done"
                             disabled={submitStatus}
-                        />
+                        />}
                     </div>
                 </form>
             </div>

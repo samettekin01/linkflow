@@ -1,5 +1,24 @@
 import { DocumentData } from "firebase/firestore"
 
+export interface PostData {
+    commentsCollectionId: string
+    likesCollectionId: string
+    postsCollectionId: string
+    createdBy: string
+    createdName: string
+    userImg: string
+    postID: string
+    createdAt: number
+    updatedAt: number
+    category: string
+    categoryId: string
+    content: {
+        title: string,
+        link: string,
+        description: string,
+        img: string
+    }
+}
 export interface PostState {
     createdById: string
     commentsCollectionId: string
@@ -13,34 +32,12 @@ export interface PostState {
     }
 }
 
-export interface EditUsersPost {
-    comments: {
-        postID: string
-    }
-    createdAt: number
-    email: string
-    posts: {
-        postId: string
-    }
-    userName: string
-}
-
-export interface EditComments {
-    comments: {
-        commentext: string
-        createdAt: number
-        userId: string
-        username: string
-    }
-}
-
 export interface UserInformations {
     displayName: string
     email: string
     uid: string
     photoURL: string
     createdAt: number
-    // posts: []
     comments: { [key: string]: string }
 }
 
@@ -55,8 +52,8 @@ export interface PostFormikValues {
 }
 
 export interface ContentSliceTypes {
-    commentsCollection: DocumentData | undefined
-    commentsCollectionStatus: string
+    userLikesCollection: DocumentData | undefined
+    userLikesCollectionStatus: string
     user: Array<DocumentData>
     userStatus: string
     post: DocumentData | undefined
@@ -94,51 +91,15 @@ export interface CategoriesTypes {
     categoryStatus: string
 }
 
-
-export interface PostData {
-    commentsCollectionId: string
-    createdBy: string
-    createdName: string
-    userImg: string
-    postID: string
-    createdAt: number
-    updatedAt: number
-    category: string
-    categoryId: string
-    content: {
-        title: string,
-        link: string,
-        description: string,
-        img: string
-    }
-}
-
 export interface PostState {
     currentPost: PostData;
 }
 
-export interface CommentData {
-    commentID: string
+export interface CategoryTypes {
+    categoryId: string
+    categoryName: string
     createdAt: number
-    commentsCollectionID: string
-    postId: string
-    userId: string
-    username: string
-    userImg: string
-    content: string
-    updatedAt: number
-    replies: {}
-}
-
-export interface Replies {
-    replyId1: {
-        replyId: string
-        commentId: string
-        userId: string
-        username: string
-        userImg: string
-        content: string
-        createdAt: number
-        updatedAt: number
-    }
+    createdBy: string
+    createdName: string
+    postsCollectionId: string
 }

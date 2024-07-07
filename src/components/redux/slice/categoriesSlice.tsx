@@ -17,8 +17,11 @@ export const handleCategories = createAsyncThunk("categories", async () => {
     return categories
 })
 
-export const handleCategory = createAsyncThunk("category", async ()=> {
-    const category = (await getDocs(query(collection(db,"categoryId"), orderBy("categoryName", "asc")))).docs.map(d => d.data())
+export const handleCategory = createAsyncThunk("category", async () => {
+    const category = (await getDocs(query(
+        collection(db, "categoryId"),
+        orderBy("categoryName", "asc")
+    ))).docs.map(d => d.data())
     return category
 })
 
