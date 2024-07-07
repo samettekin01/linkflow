@@ -24,6 +24,7 @@ https://linkflow.netlify.app/
 - <b> Firebase Storage:</b> Storage solution for user-uploaded content.
 - <b> Firebase Auth:</b> Authentication for user registration and login.
 - <b> Figma:</b> Designed with Figma
+- <b> React Loading:</b> used react-loading-indicators for loading icons
 
 #
 ### Language: Türkçe
@@ -50,3 +51,4 @@ https://linkflow.netlify.app/
 - <b>Firebase Storage:</b> Kullanıcı tarafından yüklenen içerikler için depolama çözümü.
 - <b>Firebase Auth:</b> Kullanıcı kaydı ve giriş için kimlik doğrulama.
 - <b>Figma:</b> Figma ile tasarlandı
+- <b> React Loading:</b> Yükleme iconu için react-loading-indicators kullanıldı

@@ -29,7 +29,7 @@
     grid-template-columns: auto;
 }
 
-.exitButton{
+.exitButton {
     margin-left: auto;
     font-size: 1.7rem;
     cursor: pointer;
@@ -42,7 +42,8 @@
     left: 100px;
 }
 
-.editPostDivContainer>input, .editPostDivContainer > select {
+.editPostDivContainer>input,
+.editPostDivContainer>select {
     width: 100%;
     height: 40px;
     padding: $padding10;
@@ -53,11 +54,13 @@
     border-bottom: 2px solid $background1;
 }
 
-.editPostDivContainer>input::placeholder{
+.editPostDivContainer>input::placeholder {
     color: $fcolor2;
 }
 
-.editPostDivContainer > input:focus, .editPostDivContainer > select:focus, .editPostInputDescription:focus {
+.editPostDivContainer>input:focus,
+.editPostDivContainer>select:focus,
+.editPostInputDescription:focus {
     background-color: $background2;
 }
 
@@ -73,8 +76,18 @@
     resize: none;
 }
 
-.editPostInputDescription::placeholder{
+.editPostInputDescription::placeholder {
     color: $fcolor2;
+}
+
+.postButton {
+    border: none;
+    padding: 5px 20px;
+    background-color: $icolor;
+    color: $fcolor2;
+    border-radius: $radius10;
+    margin-top: $padding10;
+    cursor: pointer;
 }
 
 .editPostButtonDiv {
@@ -95,13 +108,13 @@
     background-color: $icolor2;
 }
 
-.editPostDivContainer > label{
+.editPostDivContainer>label {
     color: $fcolor2;
     padding: $padding10;
 }
 
-@media (max-width: 600px){
-    .editPostScrenn{
+@media (max-width: 600px) {
+    .editPostScrenn {
         width: 80%;
     }
 }
