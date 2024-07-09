@@ -131,7 +131,7 @@ function AddPost() {
         initialValues,
         onSubmit: async (values) => {
             if (user) {
-                const existingCategory = getCategory && getCategory.find((d: CategoryTypes) => values.newCategory === d.categoryName)
+                const existingCategory = getCategory && getCategory.find((d: CategoryTypes) => values.newCategory.trim() === d.categoryName)
 
                 if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
                 if (getCategory && existingCategory) return dispatch(setIsOpenSnackBar({ message: "There is already the same category", status: true }))
@@ -144,7 +144,7 @@ function AddPost() {
                 const commentsCollectionId = await createCommentRef()
                 const likesCollectionId = await createLikeCollecitonRef()
                 const getURL = await dowloadURL(commentsCollectionId)
-                const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
+                const category = values.selectedCategory === "Other" ? values.newCategory.trim() : values.selectedCategory
                 const newPostsCollectionId = values.selectedCategory === "Other" ? await createPostCollectionRef() : categoryData && categoryData.postsCollectionId
 
                 console.log("commentsCollectionId, likesCollectionId, getURL, category oluşturuldu.")
@@ -188,7 +188,7 @@ function AddPost() {
                     })
 
                     console.log("oluşturma bitti")
-                    
+
                     dispatch(recentContent())
                     dispatch(setIsOpen(false))
                     setSubmitStatus(false)
@@ -255,7 +255,7 @@ function AddPost() {
                         name="newCategory"
                         placeholder="Add Category"
                         onChange={handleChange}
-                        value={values.newCategory}
+                        value={values.newCategory.trim()}
                         maxLength={15}
                         required
                     />}
