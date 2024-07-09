@@ -1,17 +1,17 @@
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store"
 import { setContent } from "../../../redux/slice/contentSlice"
-import Styles from "./style.module.scss"
 import { useEffect } from "react"
 import { handleCategory } from "../../../redux/slice/categoriesSlice"
 import { CategoryTypes } from "../../../../utils/types"
 import { OrbitProgress } from "react-loading-indicators"
+import Styles from "./style.module.scss"
 
 function TopicsCard() {
     const categories = useAppSelector(state => state.categories.category)
 
     const dispatch = useAppDispatch()
     const handleGetCategory = (id: string, categoryId: string) => {
-        dispatch(setContent({ postsCollectionId: id, categoryId: categoryId}))
+        dispatch(setContent({ postsCollectionId: id, categoryId: categoryId }))
         dispatch(handleCategory())
     }
 
@@ -33,7 +33,11 @@ function TopicsCard() {
                         {data.categoryName}
                     </div>
                 )
-                : <OrbitProgress variant="track-disc" color="#880085" size="small" text="loading..."/>}
+                :
+                <div className={Styles.loadingContainer}>
+                    <OrbitProgress variant="track-disc" color="#880085" size="small" text="loading..." />
+                </div>
+            }
         </div >
     )
 }

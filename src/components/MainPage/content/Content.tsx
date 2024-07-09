@@ -22,7 +22,7 @@ function Content() {
 
     useEffect(() => {
         dispatch(recentContent())
-    },[dispatch])
+    }, [dispatch])
 
     return (
         <div className={Styles.body}>
@@ -40,8 +40,12 @@ function Content() {
                                     </div>
                                 }
                                 <LinkCard data={data} onClick={handlePost} />
-                            </div>)
-                            : <OrbitProgress variant="track-disc" color="#880085" size="medium" text="loading..."/>
+                            </div>
+                        )
+                            :
+                            <div className={Styles.loadingContainer}>
+                                <OrbitProgress variant="track-disc" color="#880085" size="medium" text="loading..." />
+                            </div>
                     }
                 </div>
             </div>
