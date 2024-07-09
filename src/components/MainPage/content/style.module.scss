@@ -9,12 +9,18 @@
     margin-top: 85px;
 }
 
+.loadingContainer{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .bodyContainer {
     position: relative;
     display: flex;
     flex-direction: column;
     margin-left: $leftPosition;
-    width: 60%;
+    width: 43%;
     row-gap: $cardGapR;
 }
 
@@ -24,8 +30,9 @@
     min-width: 300px;
 }
 
-.topicsContainer {
-    width: 23%;
+.topicsContainer{
+    width: 14%;
+    min-width: 158px;
 }
 
 .linkCardContainer {

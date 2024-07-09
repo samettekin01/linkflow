@@ -11,7 +11,7 @@
     width: 100%;
     height: $menuHeight;
     background-color: $background1;
-    z-index: 1;
+    z-index: 2;
 }
 
 .navBarContainer {
@@ -88,8 +88,10 @@
 
 .utils {
     display: flex;
+    position: relative;
     gap: 26px;
     height: $menuHeight;
+    right: 30%;
 }
 
 .utilsPosition {
@@ -141,6 +143,14 @@
 }
 
 @media (max-width: 850px) {
+    .navBarContainer {
+        left: 10%;
+    }
+
+    .utils {
+        right: 0;
+    }
+
     .topicMenuContainer {
         display: flex;
     }
@@ -163,12 +173,12 @@
     }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 335px) {
     .logo {
         display: none;
     }
 
-    .navBarContainer{
+    .navBarContainer {
         display: flex;
         justify-content: center;
     }
@@ -177,5 +187,9 @@
 @media (max-width: 545px) {
     .utils {
         display: none;
+    }
+
+    .navBarContainer {
+        justify-content: center;
     }
 }

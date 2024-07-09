@@ -9,6 +9,13 @@
     border-radius: $radius10;
     border: $cardBorderColor;
     box-shadow: $bscolor;
+    width: 100%;
+}
+
+.loadingContainer{
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .topicsContainerNotch{  
