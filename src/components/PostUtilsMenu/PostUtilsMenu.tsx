@@ -3,11 +3,11 @@ import { DocumentData, deleteDoc, doc } from "firebase/firestore"
 import { useEffect, useRef } from "react"
 import { setIsMenuOpen, setIsOpenEditPost, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { handleComment, setCurrentPost, setUserContent } from "../redux/slice/contentSlice"
+import { handleComment, setContent, setCurrentPost } from "../redux/slice/contentSlice"
 import { db, storage } from "../../firebase/firebase"
 import { deleteObject, ref } from "firebase/storage"
-import Styles from "./style.module.scss"
 import { PostData } from "../../utils/types"
+import Styles from "./style.module.scss"
 
 
 
@@ -49,9 +49,10 @@ function PostUtilsMenu({ post }: DocumentData) {
                     console.log(`Error deleting likes: ${e.message}`)
                     dispatch(setIsOpenSnackBar({ message: "Error deleting likes", status: true }))
                 })
-                dispatch(setUserContent(d.createdBy))
                 dispatch(setIsOpenSnackBar({ message: "Post deleted", status: true }))
-            }else{
+                await dispatch(setContent({ postsCollectionId: d.postsCollectionId, categoryId: d.categoryId }))
+                window.location.reload()
+            } else {
                 dispatch(setIsOpenSnackBar({ message: "An error occurred while deleting the post.", status: true }))
             }
         }
