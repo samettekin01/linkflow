@@ -1,25 +1,25 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { setIsOpen, setIsOpenSnackBar } from "../redux/slice/stateSlice"
 import { useAppDispatch, useAppSelector } from "../redux/store/store"
-import { addDoc, collection, doc, DocumentData, setDoc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../../firebase/firebase";
-import { CategoryTypes, PostData, PostFormikValues } from "../../utils/types";
-import { useFormik } from "formik";
-import { BsX } from "react-icons/bs";
-import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice";
-import { recentContent } from "../redux/slice/contentSlice";
+import { addDoc, collection, doc, DocumentData, setDoc, updateDoc } from "firebase/firestore"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { db, storage } from "../../firebase/firebase"
+import { CategoryTypes, PostData, PostFormikValues } from "../../utils/types"
+import { useFormik } from "formik"
+import { BsX } from "react-icons/bs"
+import { handleCategories, handleCategory } from "../redux/slice/categoriesSlice"
+import { recentContent } from "../redux/slice/contentSlice"
 import Styles from "./style.module.scss"
-import { OrbitProgress } from "react-loading-indicators";
+import { OrbitProgress } from "react-loading-indicators"
 
 
 export const isValidURL = (url: string) => {
-    const regex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/;
-    return regex.test(url);
-};
+    const regex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/
+    return regex.test(url)
+}
 
 function AddPost() {
-    const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch()
 
     const user = useAppSelector(state => state.user.user)
     const getCategories = useAppSelector(state => state.categories.categories)
@@ -131,16 +131,24 @@ function AddPost() {
         initialValues,
         onSubmit: async (values) => {
             if (user) {
+                const existingCategory = getCategory && getCategory.find((d: CategoryTypes) => values.newCategory === d.categoryName)
+
                 if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
+                if (getCategory && existingCategory) return dispatch(setIsOpenSnackBar({ message: "There is already the same category", status: true }))
+
                 console.log("oluşturma başladı")
+
                 setSubmitStatus(true)
                 dispatch(setIsOpenSnackBar({ message: "Please wait, Your post is being prepared...", status: true }))
+
                 const commentsCollectionId = await createCommentRef()
                 const likesCollectionId = await createLikeCollecitonRef()
                 const getURL = await dowloadURL(commentsCollectionId)
                 const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
                 const newPostsCollectionId = values.selectedCategory === "Other" ? await createPostCollectionRef() : categoryData && categoryData.postsCollectionId
+
                 console.log("commentsCollectionId, likesCollectionId, getURL, category oluşturuldu.")
+
                 if (getURL && newPostsCollectionId) {
                     const content: PostData = {
                         commentsCollectionId: commentsCollectionId,
@@ -161,6 +169,7 @@ function AddPost() {
                             img: getURL
                         }
                     }
+
                     const postId = await createPostRef(content, newPostsCollectionId)
                     if (values.selectedCategory === "Other") {
                         if (newPostsCollectionId) {
@@ -177,7 +186,9 @@ function AddPost() {
                         postID: postId,
                         postsCollectionId: newPostsCollectionId
                     })
+
                     console.log("oluşturma bitti")
+                    
                     dispatch(recentContent())
                     dispatch(setIsOpen(false))
                     setSubmitStatus(false)
@@ -193,20 +204,20 @@ function AddPost() {
         dispatch(handleCategory())
         const handleOutsideClick = (e: MouseEvent) => {
             if (postContainer.current && !postContainer.current.contains(e.target as Node)) {
-                dispatch(setIsOpen(false));
+                dispatch(setIsOpen(false))
             }
-        };
+        }
         if (isOpen) {
-            document.body.style.overflow = "hidden";
-            document.addEventListener("mousedown", handleOutsideClick);
+            document.body.style.overflow = "hidden"
+            document.addEventListener("mousedown", handleOutsideClick)
         } else {
-            document.body.style.overflow = "";
-            document.removeEventListener("mousedown", handleOutsideClick);
+            document.body.style.overflow = ""
+            document.removeEventListener("mousedown", handleOutsideClick)
         }
         if (titleRef.current) {
-            titleRef.current.focus();
+            titleRef.current.focus()
         }
-    }, [isOpen, dispatch]);
+    }, [isOpen, dispatch])
 
     return (
         <div className={Styles.postScreenContainer}>
@@ -273,7 +284,7 @@ function AddPost() {
                         name="imgFile"
                         accept="image/png, image/jpeg, image/bmp"
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            const allowedTypes = ["image/png", "image/jpeg", "image/bmp"];
+                            const allowedTypes = ["image/png", "image/jpeg", "image/bmp"]
                             if (e.currentTarget.files && e.currentTarget.files[0]) {
                                 const file = e.currentTarget.files
                                 if (!allowedTypes.includes(file[0].type)) {

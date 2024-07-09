@@ -99,7 +99,11 @@ function EditPost() {
         initialValues,
         onSubmit: async (values) => {
             if (postContent) {
+                const existingCategory = getCategory && getCategory.find((d: CategoryTypes) => values.newCategory === d.categoryName)
+
                 if (!isValidURL(values.link)) return dispatch(setIsOpenSnackBar({ message: "Invalid URL", status: true }))
+                if (getCategory && existingCategory) return dispatch(setIsOpenSnackBar({ message: "There is already the same category", status: true }))
+
                 setSubmitStatus(true)
                 const category = values.selectedCategory === "Other" ? values.newCategory : values.selectedCategory
                 const getURL = values.img && await dowloadURL(postContent?.commentsCollectionId)
