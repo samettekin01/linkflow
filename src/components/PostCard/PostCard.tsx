@@ -4,8 +4,12 @@ import { setIsOpenEditComment, setIsOpenPost, setIsOpenSnackBar } from "../redux
 import { BsArrowUpCircleFill, BsChat, BsX } from "react-icons/bs"
 import { DocumentData, addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, startAfter, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebase"
-import Styles from "./style.module.scss"
 import LikeButton from "../LikeButton/LikeButton"
+import { useNavigate, useParams } from "react-router-dom"
+import Styles from "./style.module.scss"
+import { OrbitProgress } from "react-loading-indicators"
+import { setPost } from "../redux/slice/contentSlice"
+import { PostData } from "../../utils/types"
 
 const getFullDate = (time: number | undefined) => {
     if (time === undefined) return "Invalid Date"
@@ -14,14 +18,12 @@ const getFullDate = (time: number | undefined) => {
 }
 
 function PostCard() {
-    const getPostContainer = useRef<HTMLDivElement | null>(null)
+    const currentPostContainer = useRef<HTMLDivElement | null>(null)
     const commentRefs = useRef<{ [key: string]: React.RefObject<HTMLDivElement> }>({})
 
-    const user = useAppSelector(state => state.user.user)
-    const isOpen = useAppSelector(state => state.post.getPost)
-    const getPost = useAppSelector(state => state.content.currentPost)
-    const comment = useAppSelector(state => state.content.comment)
-    const editCommentStatus = useAppSelector(state => state.post.getComment)
+    const { user } = useAppSelector(state => state.user)
+    const { getPost, getComment } = useAppSelector(state => state.post)
+    const { currentPost, comment, post, content } = useAppSelector(state => state.content)
 
     const [commentText, setCommentText] = useState<string>("")
     const [commentStatus, setCommentStatus] = useState<boolean>(false)
@@ -31,10 +33,15 @@ function PostCard() {
     const [comments, setComments] = useState<DocumentData[]>([])
     const [lastVisible, setLastVisible] = useState<DocumentData | null>(null)
     const [loading, setLoading] = useState(false)
+    const [handlePost, setHandlePost] = useState<DocumentData | PostData | undefined>(undefined)
 
     const dispatch = useAppDispatch()
 
+    const { postsCollectionId, categoryId, postID } = useParams()
+    const navigate = useNavigate()
+
     const time = new Date().valueOf()
+
 
     const setComment = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -42,11 +49,11 @@ function PostCard() {
         if (user) {
             if (comment) {
                 if (commentText) {
-                    const commentDoc = await addDoc(collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`), {
+                    const commentDoc = await addDoc(collection(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`), {
                         commentID: "",
                         createdAt: time || "",
-                        commentsCollectionID: getPost?.commentsCollectionId || "",
-                        postId: getPost?.postID || "",
+                        commentsCollectionID: handlePost?.commentsCollectionId || "",
+                        postId: handlePost?.postID || "",
                         userId: user?.uid || "",
                         username: user?.displayName || "",
                         userImg: user?.photoURL || "",
@@ -54,7 +61,7 @@ function PostCard() {
                         updatedAt: 0 || "",
                         replies: {}
                     })
-                    await updateDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, commentDoc.id), { commentID: commentDoc.id })
+                    await updateDoc(doc(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`, commentDoc.id), { commentID: commentDoc.id })
                     fetchComments()
                     setCommentText("")
                     setCommentStatus(false)
@@ -65,7 +72,7 @@ function PostCard() {
 
     const editComment = (id: string, comment: string) => {
         const commentRef = commentRefs.current[id]?.current
-        if (!editCommentStatus[id]) {
+        if (!getComment[id]) {
             dispatch(setIsOpenEditComment({ [id]: true }))
             setTimeout(() => {
                 commentRefs.current[id].current?.classList.add(Styles.editComment)
@@ -80,7 +87,7 @@ function PostCard() {
             } else {
                 if (editCommentText === "") return dispatch(setIsOpenSnackBar({ message: "Empty text area", status: true }))
                 dispatch(setIsOpenEditComment({ [id]: false }))
-                updateDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, id), {
+                updateDoc(doc(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`, id), {
                     content: editCommentText,
                     updatedAt: new Date().valueOf()
                 })
@@ -93,7 +100,7 @@ function PostCard() {
 
     const deleteComment = (id: string) => {
         if (window.confirm("Are you sure you want to delete this comment")) {
-            deleteDoc(doc(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`, id))
+            deleteDoc(doc(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`, id))
                 .then(() => dispatch(setIsOpenSnackBar({ message: "Comment deleted successfully", status: true })))
                 .catch(e => {
                     console.log("Error deleting comment: ", e)
@@ -115,20 +122,20 @@ function PostCard() {
 
     const commentsCollection = useCallback(async () => {
         const querySnapshot = await getDocs(query(
-            collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`),
+            collection(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`),
             orderBy("createdAt", "desc"),
             limit(10)
         ))
         const getComments = querySnapshot.docs.map(d => d.data())
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1]
         return { getComments, lastVisible }
-    }, [getPost?.commentsCollectionId])
+    }, [handlePost?.commentsCollectionId])
 
     const nextComments = async (lastVisible: DocumentData | null) => {
         if (!lastVisible) return { getComments: [], lastVisible: null }
 
         const querySnapshot = await getDocs(query(
-            collection(db, `commentsCollection/${getPost?.commentsCollectionId}/comments`),
+            collection(db, `commentsCollection/${handlePost?.commentsCollectionId}/comments`),
             orderBy("createdAt", "desc"),
             startAfter(lastVisible),
             limit(10)
@@ -155,16 +162,29 @@ function PostCard() {
         setLoading(false)
     }, [commentsCollection])
 
-    useEffect(() => {
-        const handleOutsideClick = (event: MouseEvent) => {
-            if (getPostContainer.current && !getPostContainer.current.contains(event.target as Node)) {
-                dispatch(setIsOpenPost(false))
-                closePost()
-            }
+    const closePost = useCallback((status: boolean) => {
+        dispatch(setIsOpenPost(status))
+        if (content && content.length === 0) {
+            navigate(`category/${postsCollectionId}/${categoryId}`)
         }
+    }, [dispatch, content, navigate, categoryId, postsCollectionId])
 
-        const closePost = (id?: string) => {
-            dispatch(setIsOpenEditComment({ [`${id}`]: false }))
+
+    const handlePostContent = useCallback(async () => {
+        if (!currentPost) {
+            await dispatch(setPost({ postsCollectionId: `${postsCollectionId}`, postID: `${postID}` }))
+            setHandlePost(post)
+        } else {
+            setHandlePost(currentPost)
+        }
+    }, [dispatch, postsCollectionId, postID, currentPost, post])
+
+    useEffect(() => {
+        handlePostContent()
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (currentPostContainer.current && !currentPostContainer.current.contains(event.target as Node)) {
+                closePost(false)
+            }
         }
 
         const handleWindowResize = () => {
@@ -172,7 +192,7 @@ function PostCard() {
                 setCommentContent(true)
             }
         }
-        if (isOpen) {
+        if (getPost) {
             document.body.style.overflow = "hidden"
             document.addEventListener("mousedown", handleOutsideClick)
             handleWindowResize()
@@ -184,42 +204,42 @@ function PostCard() {
         window.addEventListener("resize", handleWindowResize)
 
         fetchComments()
-    }, [isOpen, dispatch, getPost, fetchComments])
+    }, [getPost, fetchComments, closePost, handlePostContent])
 
     return (
         <div className={Styles.postCardContainer}>
-            <div className={Styles.postContentContainer} ref={getPostContainer}>
+            <div className={Styles.postContentContainer} ref={currentPostContainer}>
                 <div className={Styles.exitButton}>
-                    <BsX onClick={() => dispatch(setIsOpenPost(false))} />
+                    <BsX onClick={() => closePost(false)} />
                 </div>
-                <div className={Styles.postScrenn} >
+                {handlePost && handlePost.postsCollectionId ? <div className={Styles.postScrenn} >
                     <div className={Styles.linkProfileDiv}>
                         <img
                             className={Styles.linkProfile}
-                            src={getPost?.userImg}
-                            alt={getPost?.content.title}
+                            src={handlePost?.userImg}
+                            alt={handlePost?.content.title}
                         />
                         <div className={Styles.userInfo}>
-                            <p>{getPost?.createdName}</p>
-                            <p> {getFullDate(getPost?.createdAt)}</p>
+                            <p>{handlePost?.createdName}</p>
+                            <p> {getFullDate(handlePost?.createdAt)}</p>
                         </div>
-                        {getPost && getPost?.updatedAt > 0 && <div className={Styles.editPostDate}>
+                        {handlePost && handlePost?.updatedAt > 0 && <div className={Styles.editPostDate}>
                             <p>Edited: </p>
-                            <p>{getFullDate(getPost?.createdAt)}</p>
+                            <p>{getFullDate(handlePost?.createdAt)}</p>
                         </div>}
                     </div>
-                    <h2>{getPost?.content.title}</h2>
+                    <h2>{handlePost?.content.title}</h2>
                     <img
                         className={Styles.postImg}
-                        src={getPost?.content.img}
-                        alt={getPost?.content.title}
+                        src={handlePost?.content.img}
+                        alt={handlePost?.content.title}
                     />
-                    <a href={getPost?.content.link} target="_blank" rel="noreferrer">LinkFlow</a>
+                    <a href={handlePost?.content.link} target="_blank" rel="noreferrer">LinkFlow</a>
                     <LikeButton />
                     <div className={Styles.contentTextContainer}>
-                        <p>{getPost?.content.description}</p>
+                        <p>{handlePost?.content.description}</p>
                     </div>
-                </div>
+                </div> : <OrbitProgress variant="track-disc" color="#880085" size="medium" text="loading..." />}
                 {commentsContent && <div className={Styles.postCommentsContainer}>
                     <BsX className={Styles.commetsExit} style={window.innerWidth > 500 ? { display: "none" } : { display: "block" }} onClick={() => setCommentContent(false)} />
                     <div className={Styles.postComments} >
@@ -246,22 +266,22 @@ function PostCard() {
                                     <div
                                         className={`${Styles.commentDiv}`}
                                         ref={commentRefs.current[data.commentID]}
-                                        contentEditable={editCommentStatus[data.commentID]}
+                                        contentEditable={getComment[data.commentID]}
                                         suppressContentEditableWarning={true}
                                         onInput={e => setEditCommentText((e.target as HTMLDivElement).innerText)}
                                         tabIndex={0}
                                     >
                                         {data.content}
                                     </div>
-                                    {data.userId === user?.uid && <span onClick={() => editComment(data.commentID, data.content)}>{editCommentStatus[data.commentID] ? "Done" : "Editing"}</span>}
-                                    {editCommentStatus[data.commentID] && <span onClick={() => cancelComment(data.commentID, data.content)}>Cancel</span>}
+                                    {data.userId === user?.uid && <span onClick={() => editComment(data.commentID, data.content)}>{getComment[data.commentID] ? "Done" : "Editing"}</span>}
+                                    {getComment[data.commentID] && <span onClick={() => cancelComment(data.commentID, data.content)}>Cancel</span>}
                                     {data.userId === user?.uid && <span onClick={() => deleteComment(data.commentID)}>Delete</span>}
                                 </div>
                             )
                         }) : ""}
                         {lastVisible && <button className={Styles.moreButton} onClick={loadMoreComments}>...more comments</button>}
                     </div>
-                    {user && getPost && <form className={Styles.commentUtils} onSubmit={async (e) => await setComment(e)}>
+                    {user && handlePost && <form className={Styles.commentUtils} onSubmit={async (e) => await setComment(e)}>
                         <input
                             className={Styles.commentInput}
                             type="text"

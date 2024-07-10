@@ -183,7 +183,6 @@ function AddPost() {
                     }
                     await updateDoc(doc(db, "postsCollection", newPostsCollectionId), {
                         createdAt: time,
-                        postID: postId,
                         postsCollectionId: newPostsCollectionId
                     })
 

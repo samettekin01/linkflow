@@ -80,6 +80,11 @@ function EditPost() {
                 category: categoryData.categoryName,
                 postsCollectionId: categoryData.postsCollectionId
             })
+            await updateDoc(doc(db, `users/${postContent?.createdBy}/posts`, `${postContent?.postID}`), {
+                categoryId: categoryData.categoryId,
+                category: categoryData.categoryName,
+                postsCollectionId: categoryData.postsCollectionId
+            })
             await deleteDoc(doc(db, `postsCollection/${postContent?.postsCollectionId}/posts`, `${postContent?.postID}`))
         }
     }

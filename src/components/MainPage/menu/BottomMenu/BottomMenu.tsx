@@ -1,11 +1,12 @@
 import { BsBoxArrowLeft, BsHouseFill, BsPersonFill, BsPlusCircleFill } from "react-icons/bs"
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store"
-import { recentContent, setUserContent } from "../../../redux/slice/contentSlice"
+import { recentContent } from "../../../redux/slice/contentSlice"
 import { setIsOpen } from "../../../redux/slice/stateSlice"
 import { signInWithPopup, signOut } from "firebase/auth"
 import { auth, googleProvider } from "../../../../firebase/firebase"
 import Styles from "./style.module.scss"
 import { handleUserSign } from "../../../redux/slice/userSlice"
+import { Link } from "react-router-dom"
 
 
 function BottomMenu() {
@@ -20,8 +21,6 @@ function BottomMenu() {
             } catch (error) {
                 console.log("Oturum açılırken bir hata oluştu: ", error)
             }
-        } else {
-            getUserContent(user.uid)
         }
     }
     const handleSignOut = async () => {
@@ -35,22 +34,25 @@ function BottomMenu() {
         }
     }
 
-    const getUserContent = (id: string | undefined) => {
-        id && dispatch(setUserContent(id))
-    }
-
     return (
         <div className={Styles.utilsBottom}>
-            <div className={Styles.home} onClick={() => dispatch(recentContent())}>
+            <Link to="/" className={Styles.home} onClick={() => dispatch(recentContent())}>
                 <BsHouseFill className={Styles.utilsIcon} />
                 <p>Home</p>
-            </div>
+            </Link>
             {user && <div className={Styles.add}>
                 <BsPlusCircleFill className={Styles.utilsIcon} onClick={() => dispatch(setIsOpen(true))} />
                 Add
             </div>}
             <div className={Styles.profile} onClick={login}>
-                {user == null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
+                {
+                    user == null ?
+                        <BsPersonFill className={Styles.utilsIcon} />
+                        :
+                        <Link to={`profile/${user.uid}`} >
+                            <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />
+                        </Link>
+                }
                 {user ? user.displayName.split(" ")[0] : "Log in"}
             </div>
             {user &&

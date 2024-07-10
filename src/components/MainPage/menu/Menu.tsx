@@ -1,14 +1,15 @@
-import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList } from "react-icons/bs";
-import { auth, googleProvider } from "../../../firebase/firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
-import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { useEffect, useRef, useState } from "react";
-import { handleUserSign } from "../../redux/slice/userSlice";
-import Styles from "./style.module.scss";
-import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice";
-import { recentContent, setUserContent } from "../../redux/slice/contentSlice";
-import TopicsCard from "../body/TopicsCard/TopicsCard";
-import Logo from "../../../styles/Logo";
+import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList } from "react-icons/bs"
+import { auth, googleProvider } from "../../../firebase/firebase"
+import { signInWithPopup, signOut } from "firebase/auth"
+import { useAppDispatch, useAppSelector } from "../../redux/store/store"
+import { useEffect, useRef, useState } from "react"
+import { handleUserSign } from "../../redux/slice/userSlice"
+import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice"
+import { recentContent } from "../../redux/slice/contentSlice"
+import TopicsCard from "../body/TopicsCard/TopicsCard"
+import Logo from "../../../styles/Logo"
+import { Link } from "react-router-dom"
+import Styles from "./style.module.scss"
 
 const Menu: React.FC = () => {
     const user = useAppSelector(state => state.user.user)
@@ -28,8 +29,6 @@ const Menu: React.FC = () => {
                 console.log("An error occurred while logging in: ", error)
                 dispatch(setIsOpenSnackBar({ message: "An error occurred while logging in:", status: true }))
             }
-        } else {
-            getUserContent(user.uid)
         }
     }
     const handleSignOut = async () => {
@@ -42,10 +41,6 @@ const Menu: React.FC = () => {
                 console.log("An error occurred while terminating the session: ", error)
             }
         }
-    }
-
-    const getUserContent = (id: string | undefined) => {
-        id && dispatch(setUserContent(id))
     }
 
     useEffect(() => {
@@ -71,21 +66,28 @@ const Menu: React.FC = () => {
                 </div>}
             </div>
             <div className={Styles.navBarContainer}>
-                <div className={Styles.logoDiv} onClick={() => dispatch(recentContent())}>
+                <Link to="/" className={Styles.logoDiv} onClick={() => dispatch(recentContent())}>
                     <Logo />
                     <div className={Styles.logo}>LinkFlow</div>
-                </div>
+                </Link>
                 <div className={Styles.utils}>
-                    <div className={Styles.home} onClick={() => dispatch(recentContent())}>
+                    <Link to="/" className={Styles.home} onClick={() => dispatch(recentContent())}>
                         <BsHouseFill className={Styles.utilsIcon} />
                         <p>Home</p>
-                    </div>
+                    </Link>
                     {user && <div className={Styles.add}>
                         <BsPlusCircleFill className={Styles.utilsIcon} onClick={() => dispatch(setIsOpen(true))} />
                         Add
                     </div>}
                     <div className={Styles.profile} onClick={login}>
-                        {user === null ? <BsPersonFill className={Styles.utilsIcon} /> : <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />}
+                        {
+                            user === null ?
+                                <BsPersonFill className={Styles.utilsIcon} />
+                                :
+                                <Link to={`/profile/${user.uid}`}>
+                                    <img src={`${user.photoURL}`} className={Styles.profileStyle} alt={user.displayName} />
+                                </Link>
+                        }
                         {user ? user.displayName.split(" ")[0] : "Log in"}
                     </div>
                     {user &&

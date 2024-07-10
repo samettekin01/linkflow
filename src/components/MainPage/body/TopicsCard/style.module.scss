@@ -37,13 +37,17 @@
     margin-bottom: 10px;
 }
 
-.topics:hover {
+.topics:hover  {
     text-decoration: underline;
 }
 
-.topics {
+.topics  {
+    display: flex;
+    flex-direction: column;
+    color: black;
     margin-bottom: 5px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 @media (max-width: 850px) {

@@ -60,10 +60,19 @@ export const recentContent = createAsyncThunk("recentContent", async () => {
     ))).docs.map(d => d.data())
     const getPosts = [];
     for (const d of getContent) {
-        const subDoc = await getDoc(doc(db, `postsCollection/${d.postsCollectionId}/posts`, d.postID));
-        getPosts.push(subDoc.data());
+        const subDoc = (await getDocs(query(
+            collection(db, `postsCollection/${d.postsCollectionId}/posts`),
+            orderBy("createdAt", "desc"),
+            limit(2)
+        ))).docs.map(d => d.data())
+        getPosts.push(...subDoc)
     }
     return getPosts
+})
+
+export const setPost = createAsyncThunk("post", async ({ postsCollectionId, postID }: { postsCollectionId: string, postID: string} ) => {
+    const getContent = (await getDoc(doc(db,`postsCollection/${postsCollectionId}/posts/${postID}`))).data()
+    return getContent
 })
 
 export const handleLike = createAsyncThunk("likes", async ({ data, user }: { data: PostData, user: UserInformations }) => {
@@ -165,6 +174,16 @@ const contentSlice = createSlice({
         })
         builder.addCase(likesCount.rejected, state => {
             state.likesCountStatus = "rejected"
+        })
+        builder.addCase(setPost.fulfilled, (state, action) => {
+            state.post = action.payload
+            state.postStatus = "fulfilled"
+        })
+        builder.addCase(setPost.pending, state => {
+            state.postStatus = "pending"
+        })
+        builder.addCase(setPost.rejected, state => {
+            state.postStatus = "rejected"
         })
     }
 })
