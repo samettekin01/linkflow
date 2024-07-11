@@ -2,8 +2,12 @@
 
 .content {
     @extend .cardStyles;
-    max-height: 200px;
+    max-height: 400px;
     cursor: pointer;
+}
+
+.content:hover .linkCardImg{
+    background-size: 200%;
 }
 
 .linkCard {
@@ -43,38 +47,45 @@
     gap: 5px;
 }
 
-.categoryName{
+.categoryName {
     position: absolute;
-    right: 0;
-    top: -20px;
-    padding: 1px 8px;
-    background-color: $background1;
-    color: $fcolor1;
+    left: 5px;
+    bottom: 10px;
+    padding: 3px 10px;
+    background-color: $background2;
+    color: $fcolor2;
+    font-size: 1rem;
 }
 
 .linkCardImg {
-    width: 100px;
-    background-size: 100%;
+    width: 50%;
+    height: 200px;
+    background-size: 150%;
     background-position-y: 50%;
     background-position-x: 50%;
     background-repeat: no-repeat;
+    transition: 0.3s;
+    min-width: 115px;
 }
 
 .cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     width: 100%;
 }
 
 .cardContent>* {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 5;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
     color: $fcolor1;
 }
 
-.editPostDate{
+.editPostDate {
     position: absolute;
     right: 50px;
     font-size: calc(0.7rem);

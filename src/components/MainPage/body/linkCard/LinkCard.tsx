@@ -1,11 +1,14 @@
-import { DocumentData } from "firebase/firestore";
+import { PostData } from "../../../../utils/types";
 import Styles from "./style.module.scss"
 
-function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
+
+function LinkCard({ data, onClick }: { data: PostData, onClick: any }) {
+
     const formatUnixTimeStamp = (time: number) => {
         const date = new Date(time).toLocaleDateString()
         return date
     }
+
     return (
         <div className={Styles.content} onClick={() => onClick(data)}>
             <div className={Styles.linkCard}>
@@ -13,7 +16,7 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
                     <img
                         className={Styles.linkProfile}
                         src={data.userImg}
-                        alt={data.title}
+                        alt={data.content.title}
                     />
                     <div className={Styles.userInfo}>
                         <p>{data.createdName}</p>
@@ -25,13 +28,14 @@ function LinkCard({ data, onClick }: { data: DocumentData, onClick: any }) {
                     </div>}
                 </div>
                 <div className={Styles.linkCardContent}>
-                    <span className={Styles.categoryName}>{data.category}</span>
                     <div
                         className={Styles.linkCardImg}
                         style={{
                             backgroundImage: `url(${data.content.img})`
                         }}
-                    />
+                    >
+                        <span className={Styles.categoryName}>{data.category}</span>
+                    </div>
                     <div className={Styles.cardContent}>
                         <h2>{data.content.title}</h2>
                         <p>{data.content.description}</p>
