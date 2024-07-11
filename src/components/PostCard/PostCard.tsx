@@ -235,7 +235,7 @@ function PostCard() {
                         alt={handlePost?.content.title}
                     />
                     <a href={handlePost?.content.link} target="_blank" rel="noreferrer">LinkFlow</a>
-                    <LikeButton />
+                    <LikeButton id={handlePost?.likesCollectionId}/>
                     <div className={Styles.contentTextContainer}>
                         <p>{handlePost?.content.description}</p>
                     </div>

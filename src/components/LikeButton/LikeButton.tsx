@@ -6,7 +6,7 @@ import { DocumentData, collection, deleteDoc, doc, getDocs, query, where } from 
 import { db } from "../../firebase/firebase"
 import { useCallback, useEffect, useState } from "react"
 
-function LikeButton() {
+function LikeButton({ id, }: { id: string }) {
     const getPost = useAppSelector(state => state.content.currentPost)
     const likes = useAppSelector(state => state.content.likesCount)
     const user = useAppSelector(state => state.user.user)
@@ -19,7 +19,7 @@ function LikeButton() {
     const userLikeStatus = useCallback(async () => {
         if (getPost && user) {
             const getLike = (await getDocs(query(
-                collection(db, `likesCollection/${getPost.likesCollectionId}/likes`),
+                collection(db, `likesCollection/${id}/likes`),
                 where("createdBy", "==", user?.uid)
             ))).docs.map(d => d.data())
             if (getLike.length > 0) {
@@ -31,7 +31,7 @@ function LikeButton() {
             }
             setButtonStatus(false)
         }
-    }, [getPost, user])
+    }, [getPost, user, id])
 
     const currentLike = async () => {
         if (getPost && user) {
