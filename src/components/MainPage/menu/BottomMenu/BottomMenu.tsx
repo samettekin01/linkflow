@@ -4,20 +4,22 @@ import { recentContent } from "../../../redux/slice/contentSlice"
 import { setIsOpen } from "../../../redux/slice/stateSlice"
 import { signInWithPopup, signOut } from "firebase/auth"
 import { auth, googleProvider } from "../../../../firebase/firebase"
-import Styles from "./style.module.scss"
 import { handleUserSign } from "../../../redux/slice/userSlice"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import Styles from "./style.module.scss"
 
 
 function BottomMenu() {
     const user = useAppSelector(state => state.user.user)
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
     const login = async () => {
         if (!user) {
             try {
                 await signInWithPopup(auth, googleProvider)
                 dispatch(handleUserSign())
+                navigate("/")
             } catch (error) {
                 console.log("Oturum açılırken bir hata oluştu: ", error)
             }

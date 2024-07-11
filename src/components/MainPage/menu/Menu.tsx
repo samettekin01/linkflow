@@ -6,9 +6,9 @@ import { useEffect, useRef, useState } from "react"
 import { handleUserSign } from "../../redux/slice/userSlice"
 import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice"
 import { recentContent } from "../../redux/slice/contentSlice"
+import { Link, useNavigate } from "react-router-dom"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
 import Logo from "../../../styles/Logo"
-import { Link } from "react-router-dom"
 import Styles from "./style.module.scss"
 
 const Menu: React.FC = () => {
@@ -20,11 +20,14 @@ const Menu: React.FC = () => {
 
     const topicMenuRef = useRef<HTMLDivElement | null>(null)
 
+    const navigate = useNavigate()
+
     const login = async () => {
         if (!user) {
             try {
                 await signInWithPopup(auth, googleProvider)
                 dispatch(handleUserSign())
+                navigate("/")
             } catch (error) {
                 console.log("An error occurred while logging in: ", error)
                 dispatch(setIsOpenSnackBar({ message: "An error occurred while logging in:", status: true }))
