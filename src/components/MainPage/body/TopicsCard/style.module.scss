@@ -10,6 +10,7 @@
     border: $cardBorderColor;
     box-shadow: $bscolor;
     width: 100%;
+    min-width: 220px;
 }
 
 .loadingContainer{
@@ -34,20 +35,31 @@
 }
 
 .topicTitle {
+    display: flex;
+    justify-content: center;
     margin-bottom: 10px;
 }
 
 .topics:hover  {
-    text-decoration: underline;
+    background-color: #00000028;
+    font-weight: bold;
 }
 
 .topics  {
     display: flex;
     flex-direction: column;
-    color: black;
-    margin-bottom: 5px;
+    padding: 10px 15px;
     cursor: pointer;
+    white-space: nowrap;
+    color: black;
     text-decoration: none;
+    font-size: 1.1rem;
+    transition: .3s;
+    border-radius: 20px;
+}
+
+.topics > span {
+    font-size: 0.8rem;
 }
 
 @media (max-width: 850px) {
