@@ -22,7 +22,6 @@ https://linkflow.netlify.app/
 - <b> Firestore: </b>Database for storing posts and comments.
 - <b> Firebase Storage:</b> Storage solution for user-uploaded content.
 - <b> Firebase Auth:</b> Authentication for user registration and login.
-- <b> Figma:</b> Designed with Figma
 - <b> React Loading:</b> Used react-loading-indicators for loading icons
 - <b> React Router DOM:</b> Library for redirecting between pages
 
@@ -50,6 +49,5 @@ https://linkflow.netlify.app/
 - <b>Firestore:</b> Post ve yorumları depolamak için kullanılan veritabanı.
 - <b>Firebase Storage:</b> Kullanıcı tarafından yüklenen içerikler için depolama çözümü.
 - <b>Firebase Auth:</b> Kullanıcı kaydı ve giriş için kimlik doğrulama.
-- <b>Figma:</b> Figma ile tasarlandı
 - <b> React Loading:</b> Yükleme iconu için react-loading-indicators kullanıldı
 - <b> React Router DOM:</b> Sayfalar arası yönlendirme yapmak için kütüphane
