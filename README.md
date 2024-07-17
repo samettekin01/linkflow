@@ -56,4 +56,4 @@ https://linkflow.netlify.app/
 
 ## GIF
 
-![](https://github.com/samettekin01/linkup/blob/master/assets/gif/0717%20(1).gif)
+![](https://github.com/samettekin01/linkflow/blob/master/assets/gif/0717.gif)
