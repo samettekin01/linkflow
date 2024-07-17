@@ -16,7 +16,9 @@ const initialState: ContentSliceTypes | PostState = {
     comment: [],
     commentStatus: "",
     likesCount: 0,
-    likesCountStatus: ""
+    likesCountStatus: "",
+    postsCount: 0,
+    postsCountStatus: ""
 }
 
 export const handleComment = createAsyncThunk("commentsCollection", async (id: string) => {
@@ -70,8 +72,8 @@ export const recentContent = createAsyncThunk("recentContent", async () => {
     return getPosts
 })
 
-export const setPost = createAsyncThunk("post", async ({ postsCollectionId, postID }: { postsCollectionId: string, postID: string} ) => {
-    const getContent = (await getDoc(doc(db,`postsCollection/${postsCollectionId}/posts/${postID}`))).data()
+export const setPost = createAsyncThunk("post", async ({ postsCollectionId, postID }: { postsCollectionId: string, postID: string }) => {
+    const getContent = (await getDoc(doc(db, `postsCollection/${postsCollectionId}/posts/${postID}`))).data()
     return getContent
 })
 
@@ -90,10 +92,13 @@ export const handleLike = createAsyncThunk("likes", async ({ data, user }: { dat
 })
 
 export const likesCount = createAsyncThunk("likesCount", async (id: string) => {
-    const likes = (await getCountFromServer(query(
-        collection(db, `likesCollection/${id}/likes`)
-    ))).data().count
+    const likes = (await getCountFromServer(collection(db, `likesCollection/${id}/likes`))).data().count
     return likes
+})
+
+export const handlePostsCount = createAsyncThunk("postCount", async (id: string) => {
+    const posts = (await getCountFromServer(collection(db, `postsCollection/${id}/posts`))).data().count
+    return posts
 })
 
 export const userLikeStatusAction = createAsyncThunk("likes", async ({ data, user }: { data: PostData, user: UserInformations }) => {
@@ -174,6 +179,16 @@ const contentSlice = createSlice({
         })
         builder.addCase(likesCount.rejected, state => {
             state.likesCountStatus = "rejected"
+        })
+        builder.addCase(handlePostsCount.fulfilled, (state, action) => {
+            state.postsCount = action.payload
+            state.postsCountStatus = "fulfilled"
+        })
+        builder.addCase(handlePostsCount.pending, state => {
+            state.postsCountStatus = "pending"
+        })
+        builder.addCase(handlePostsCount.rejected, state => {
+            state.postsCountStatus = "rejected"
         })
         builder.addCase(setPost.fulfilled, (state, action) => {
             state.post = action.payload
