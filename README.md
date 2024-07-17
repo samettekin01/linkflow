@@ -1,7 +1,7 @@
 #
 ### Language: English
 # LinkFlow
-A web platform inspired by the design of Instagram, LinkedIn, and Medium, where users can share and discover useful website links.
+where users can share and discover useful website links.
 
 ## Demo
 https://linkflow.netlify.app/
@@ -29,7 +29,7 @@ https://linkflow.netlify.app/
 #
 ### Language: Türkçe
 # LinkFlow
-Instagram, LinkedIn ve Medium tasarımından ilham alınarak oluşturulmuş, yararlı web sitelerinin linklerinin paylaşıldığı bir platform.
+Yararlı web sitelerinin linklerinin paylaşıldığı bir platform.
 
 ## Demo
 https://linkflow.netlify.app/
