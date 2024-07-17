@@ -54,7 +54,6 @@ https://linkflow.netlify.app/
 - <b> React Loading:</b> Yükleme iconu için react-loading-indicators kullanıldı
 - <b> React Router DOM:</b> Sayfalar arası yönlendirme yapmak için kütüphane
 
-## Desktop
-![](https://console.firebase.google.com/project/linkup-51335/storage/linkup-51335.appspot.com/files)
-## Mobile
-![](https://console.firebase.google.com/project/linkup-51335/storage/linkup-51335.appspot.com/files)
+## GIF
+
+![](https://github.com/samettekin01/linkup/blob/master/assets/gif/0717%20(1).gif)
