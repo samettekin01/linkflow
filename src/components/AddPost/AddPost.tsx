@@ -145,15 +145,15 @@ function AddPost() {
                 const likesCollectionId = await createLikeCollecitonRef()
                 const getURL = await dowloadURL(commentsCollectionId)
                 const category = values.selectedCategory === "Other" ? values.newCategory.trim() : values.selectedCategory
-                const newPostsCollectionId = values.selectedCategory === "Other" ? await createPostCollectionRef() : categoryData && categoryData.postsCollectionId
+                const getPostsCollectionId = values.selectedCategory === "Other" ? await createPostCollectionRef() : categoryData && categoryData.postsCollectionId
 
                 console.log("commentsCollectionId, likesCollectionId, getURL, category oluşturuldu.")
 
-                if (getURL && newPostsCollectionId) {
+                if (getURL && getPostsCollectionId) {
                     const content: PostData = {
                         commentsCollectionId: commentsCollectionId,
                         likesCollectionId: likesCollectionId,
-                        postsCollectionId: newPostsCollectionId || "",
+                        postsCollectionId: getPostsCollectionId || "",
                         createdBy: user?.uid,
                         createdName: user?.displayName,
                         userImg: user?.photoURL,
@@ -170,20 +170,20 @@ function AddPost() {
                         }
                     }
 
-                    const postId = await createPostRef(content, newPostsCollectionId)
+                    const postId = await createPostRef(content, getPostsCollectionId)
                     if (values.selectedCategory === "Other") {
-                        if (newPostsCollectionId) {
+                        if (getPostsCollectionId) {
                             console.log("Other Seçildi")
-                            const { postsCollectionId, postCreateId } = await createCategoryRef(values.newCategory, postId, newPostsCollectionId)
+                            const { postsCollectionId, postCreateId } = await createCategoryRef(values.newCategory, postId, getPostsCollectionId)
                             handleUserPost(content, postsCollectionId, postCreateId.id, postId)
                         }
                     } else {
-                        console.log("kategori seçildi: ", newPostsCollectionId, " Id: ", newPostsCollectionId)
-                        handleUserPost(content, newPostsCollectionId, getCategories[0][values.selectedCategory], postId)
+                        console.log("kategori seçildi: ", getPostsCollectionId, " Id: ", getPostsCollectionId)
+                        handleUserPost(content, getPostsCollectionId, getCategories[0][values.selectedCategory], postId)
                     }
-                    await updateDoc(doc(db, "postsCollection", newPostsCollectionId), {
+                    await updateDoc(doc(db, "postsCollection", getPostsCollectionId), {
                         createdAt: time,
-                        postsCollectionId: newPostsCollectionId
+                        postsCollectionId: getPostsCollectionId
                     })
 
                     console.log("oluşturma bitti")

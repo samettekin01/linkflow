@@ -65,6 +65,8 @@ export interface ContentSliceTypes {
     commentStatus: string
     likesCount: number
     likesCountStatus: string
+    postsCount: number
+    postsCountStatus: string
 }
 
 export interface IsOpen {

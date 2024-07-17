@@ -88,8 +88,8 @@ function PostUtilsMenu({ post }: DocumentData) {
                 <BsThreeDotsVertical />
             </button>
             {isOpen[post.postID] && <div className={Styles.postMenuList} ref={postMenuRef}>
-                <button onClick={() => postEdit(post)}>Düzenle <BsPencil /></button>
-                <button onClick={() => postDelete(post)}>Sil <BsFillTrash3Fill /></button>
+                <button onClick={() => postEdit(post)}>Edit <BsPencil /></button>
+                <button onClick={() => postDelete(post)}>Delete <BsFillTrash3Fill /></button>
             </div>}
         </div>
     )
