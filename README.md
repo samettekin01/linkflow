@@ -19,6 +19,7 @@ https://linkflow.netlify.app/
 - <b> Sass/SCSS:</b> CSS preprocessor for styling.
 - <b> Bootstrap Icons: </b>Icons library.
 - <b> Formik: </b>Form management library.
+- <b> Redux </b>: State management library for managing application state.
 - <b> Firestore: </b>Database for storing posts and comments.
 - <b> Firebase Storage:</b> Storage solution for user-uploaded content.
 - <b> Firebase Auth:</b> Authentication for user registration and login.
@@ -46,8 +47,12 @@ https://linkflow.netlify.app/
 - <b>Sass/SCSS:</b> Stil vermek için kullanılan CSS ön işlemcisi.
 - <b>Bootstrap Icons:</b> İkon kütüphanesi.
 - <b>Formik:</b> Form yönetimi için kütüphane.
+- <b> Redux </b>: State yönetimi için bir state yönetim kütüphanesi.
 - <b>Firestore:</b> Post ve yorumları depolamak için kullanılan veritabanı.
 - <b>Firebase Storage:</b> Kullanıcı tarafından yüklenen içerikler için depolama çözümü.
 - <b>Firebase Auth:</b> Kullanıcı kaydı ve giriş için kimlik doğrulama.
 - <b> React Loading:</b> Yükleme iconu için react-loading-indicators kullanıldı
 - <b> React Router DOM:</b> Sayfalar arası yönlendirme yapmak için kütüphane
+
+## GIF
+![](https://firebasestorage.googleapis.com/v0/b/linkup-51335.appspot.com/o/0717.gif?alt=media&token=c9c95ea1-5746-40f8-8633-fa8168693721)
