@@ -1,7 +1,7 @@
 #
 ### Language: English
 # LinkFlow
-where users can share and discover useful website links.
+This is a platform where users can share and discover useful website links.
 
 ## Demo
 https://linkflow.netlify.app/
