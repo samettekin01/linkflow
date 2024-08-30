@@ -24,7 +24,6 @@ function TopicsCard() {
             }
         }
         setPostsCount(postsArray)
-        console.log(postsArray)
     }, [category])
 
     useEffect(() => { 
