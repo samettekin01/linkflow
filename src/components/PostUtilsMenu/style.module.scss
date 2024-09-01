@@ -24,6 +24,7 @@
     background-color: $background1;
     font-size: 1rem;
     cursor: pointer;
+    user-select: none;
     transition: $transitionTime;
 }
 

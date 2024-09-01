@@ -1,108 +1,62 @@
 @import "../../styles/variable.scss";
 
 .postScreenContainer {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100dvh;
-    background-color: $trBackground;
-    z-index: 2;
+    @extend .postPreparingCard;
 }
 
 .postScrenn {
-    position: sticky;
-    top: 30px;
-    width: 60%;
-    padding: $cardPadding;
-    border-radius: $radius10;
-    background-color: $background2;
-    color: $fcolor2;
-    display: flex;
-    flex-direction: column;
+    @extend .postScreen;
 }
 
 .postDivContainer {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto;
+    @extend .postDivContainer;
 }
 
-.exitButton{
-    margin-left: auto;
-    font-size: 1.7rem;
-    cursor: pointer;
-    color: $fcolor2;
+.exitButton {
+    @extend .exitButton;
 }
 
-.postSpan::after {
-    content: ":";
-    position: absolute;
-    left: 100px;
+.postDivContainer>input,
+.postDivContainer>select {
+    @extend .postChildrenUtils1;
 }
 
-.postDivContainer>input, .postDivContainer > select {
-    width: 100%;
-    height: 40px;
-    padding: $padding10;
-    background-color: $background2;
-    color: $fcolor2;
-    outline: none;
-    border: none;
-    border-bottom: 2px solid $background1;
+.postDivContainer>input::placeholder {
+    @extend .editPostDivContainerPlaceHolder;
 }
 
-.postDivContainer>input::placeholder{
-    color: $fcolor2;
-}
-
-.postDivContainer > input:focus, .postDivContainer > select:focus, .postInputDescription:focus {
-    background-color: $background3;
+.postDivContainer>input:focus,
+.postDivContainer>select:focus,
+.postInputDescription:focus {
+    @extend .postChildrenUtils2;
 }
 
 .postInputDescription {
-    width: 100%;
-    height: 100%;
-    background-color: $background2;
-    color: $fcolor2;
-    padding: $padding10;
-    outline: none;
-    border: none;
-    border-bottom: 2px solid $background1;
-    resize: none;
-    white-space: pre-line;
+    @extend .postInputDescription;
 }
 
-.postInputDescription::placeholder{
-    color: $fcolor2;
+.postInputDescription::placeholder {
+    @extend .editPostDivContainerPlaceHolder;
 }
 
 .postButtonDiv {
-    margin-left: auto;
+    @extend .postButtonDiv;
 }
 
 .postButton {
-    border: none;
-    padding: 5px 20px;
-    background-color: $icolor;
-    color: $fcolor2;
-    border-radius: $radius10;
-    margin-top: $padding10;
-    cursor: pointer;
+    @extend .postButton;
 }
 
 .postButton:hover {
-    background-color: $icolor2;
+    @extend .postButtonHover;
 }
 
-.postDivContainer > label{
-    color: $fcolor2;
-    padding: $padding10;
+.postDivContainer>label {
+    @extend .postDivContainerLabel;
 }
 
-@media (max-width: 600px){
-    .postScrenn{
+@media (max-width: 600px) {
+    .postScrenn {
         width: 80%;
     }
 }

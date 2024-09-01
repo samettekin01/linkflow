@@ -43,7 +43,6 @@
 .linkCardContent {
     position: relative;
     display: flex;
-    flex-direction: row;
     gap: 5px;
 }
 
@@ -88,6 +87,6 @@
 .editPostDate {
     position: absolute;
     right: 50px;
-    font-size: calc(0.7rem);
+    font-size: 0.7rem;
     color: $fcolor1;
 }

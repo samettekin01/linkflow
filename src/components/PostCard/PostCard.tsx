@@ -285,7 +285,7 @@ function PostCard() {
                         <input
                             className={Styles.commentInput}
                             type="text"
-                            placeholder="comment"
+                            placeholder="Comment"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             onFocus={() => setCommentContent(true)}
