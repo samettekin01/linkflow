@@ -204,6 +204,7 @@ function PostCard() {
         window.addEventListener("resize", handleWindowResize)
 
         fetchComments()
+
     }, [getPost, fetchComments, closePost, handlePostContent])
 
     return (
@@ -235,7 +236,7 @@ function PostCard() {
                         alt={handlePost?.content.title}
                     />
                     <a href={handlePost?.content.link} target="_blank" rel="noreferrer">LinkFlow</a>
-                    <LikeButton id={handlePost?.likesCollectionId}/>
+                    <LikeButton id={handlePost?.likesCollectionId} />
                     <div className={Styles.contentTextContainer}>
                         <p>{handlePost?.content.description}</p>
                     </div>
@@ -243,7 +244,7 @@ function PostCard() {
                 {commentsContent && <div className={Styles.postCommentsContainer}>
                     <BsX className={Styles.commetsExit} style={window.innerWidth > 500 ? { display: "none" } : { display: "block" }} onClick={() => setCommentContent(false)} />
                     <div className={Styles.postComments} >
-                        {comments ? comments.map((data: DocumentData) => {
+                        {comments && comments.map((data: DocumentData) => {
                             if (!commentRefs.current[data.commentID]) {
                                 commentRefs.current[data.commentID] = createRef<HTMLDivElement>()
                             }
@@ -278,7 +279,7 @@ function PostCard() {
                                     {data.userId === user?.uid && <span onClick={() => deleteComment(data.commentID)}>Delete</span>}
                                 </div>
                             )
-                        }) : ""}
+                        })}
                         {lastVisible && <button className={Styles.moreButton} onClick={loadMoreComments}>...more comments</button>}
                     </div>
                     {user && handlePost && <form className={Styles.commentUtils} onSubmit={async (e) => await setComment(e)}>
@@ -295,8 +296,8 @@ function PostCard() {
                         </button>
                     </form>}
                 </div>}
-                <div className={Styles.postUtils} onClick={() => setCommentContent(true)}>
-                    <BsChat /> <span>Comments</span>
+                <div className={Styles.postUtils} onClick={() => { if (user || comments.length > 0) setCommentContent(true) }}>
+                    <BsChat /> <span>{comments.length > 0 ? "Comments" : "No Comments"}</span>
                 </div>
             </div>
         </div >
