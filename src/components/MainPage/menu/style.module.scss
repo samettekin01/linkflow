@@ -20,7 +20,8 @@
     position: absolute;
     left: $leftPosition;
     justify-content: space-between;
-    width: 83%;
+    align-items: center;
+    width: 62%;
 }
 
 /*Logo Styles*/
@@ -51,10 +52,42 @@
 .searchDiv {
     display: flex;
     align-items: center;
-    height: $menuHeight;
-    margin: 0 5px;
-    width: 350px;
+    position: relative;
+    margin-left: 10px;
+    margin-right: auto;
+    height: $searchHeight;
+    width: 100%;
+    max-width: 350px;
     min-width: 160px;
+}
+
+.searchResultDiv {
+    position: absolute;
+    top: 29px;
+    left: 0px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid $fcolor3;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    z-index: 1;
+}
+
+.searchResultDiv a {
+    @extend .utilsPosition;
+    list-style: none;
+    padding: 10px;
+}
+
+.searchResultDiv li {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.searchResultDiv a:hover {
+    background-color: $background3;
+    color: $fcolor2;
+    transition: .3s;
 }
 
 .searchButton {
@@ -64,32 +97,39 @@
     height: $searchHeight;
 }
 
-.searchForm {
-    width: 100%;
-}
-
 .searchInput {
-    width: 60%;
+    width: 50%;
     height: $searchHeight;
     padding-left: 30px;
-    border: 1px solid $fcolor1;
-    border-radius: $radius5;
+    border: none;
+    border-radius: $radius10;
+    outline: none;
+    background-color: transparent;
     -webkit-transition: $transitionTime;
     transition: $transitionTime;
-    outline: none;
-    background-color: $background1;
+    box-shadow: $bscolor;
+    border: 1px solid $fcolor3;
+    border-radius: $radius10;
 }
 
-.searchInput:focus {
+.searchInput:focus, .searchInput:not([value=""]) {
     width: 100%;
-    background-color: $fcolor2;
+}
+
+.searchInput:not([value=""]) {
+    border-bottom: none;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.searchInput[value=""] ~ .searchResultDiv {
+    display: none;
 }
 
 /*Utils Style*/
 
 .utils {
     display: flex;
-    position: relative;
     gap: 26px;
     height: $menuHeight;
     right: 30%;
@@ -175,23 +215,24 @@
     }
 }
 
-@media (max-width: 335px) {
-    .logo {
-        display: none;
-    }
-
-    .navBarContainer {
-        display: flex;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 545px) {
+@media (max-width: 730px) {
     .utils {
         display: none;
     }
 
     .navBarContainer {
         justify-content: center;
+        width: 90%;
+    }
+}
+
+@media (max-width: 465px) {
+    .logo {
+        display: none;
+    }
+
+    .navBarContainer {
+        width: 70%;
+        left: 30%;
     }
 }

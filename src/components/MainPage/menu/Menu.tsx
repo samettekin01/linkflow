@@ -1,22 +1,26 @@
-import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList } from "react-icons/bs"
+import { BsPersonFill, BsPlusCircleFill, BsHouseFill, BsBoxArrowLeft, BsList, BsSearch } from "react-icons/bs"
 import { auth, googleProvider } from "../../../firebase/firebase"
 import { signInWithPopup, signOut } from "firebase/auth"
 import { useAppDispatch, useAppSelector } from "../../redux/store/store"
 import { useEffect, useRef, useState } from "react"
 import { handleUserSign } from "../../redux/slice/userSlice"
-import { setIsOpen, setIsOpenSnackBar } from "../../redux/slice/stateSlice"
-import { recentContent } from "../../redux/slice/contentSlice"
+import { setIsOpen, setIsOpenPost, setIsOpenSnackBar } from "../../redux/slice/stateSlice"
+import { recentContent, setCurrentPost } from "../../redux/slice/contentSlice"
 import { Link, useNavigate } from "react-router-dom"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
 import Logo from "../../../styles/Logo"
 import Styles from "./style.module.scss"
+import { PostData } from "../../../utils/types"
 
 const Menu: React.FC = () => {
-    const user = useAppSelector(state => state.user.user)
+    const { user } = useAppSelector(state => state.user)
+    const { content } = useAppSelector(state => state.content)
 
     const dispatch = useAppDispatch()
 
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false)
+    const [searchValue, setSearchValue] = useState<string>("")
+    const [searchResult, setSearchResult] = useState<Array<PostData>>()
 
     const topicMenuRef = useRef<HTMLDivElement | null>(null)
 
@@ -46,6 +50,11 @@ const Menu: React.FC = () => {
         }
     }
 
+    const handlePost = (data: PostData) => {
+        dispatch(setIsOpenPost(true))
+        dispatch(setCurrentPost(data))
+    }
+
     useEffect(() => {
         dispatch(handleUserSign())
         const handleOutsideClick = (e: MouseEvent) => {
@@ -60,6 +69,15 @@ const Menu: React.FC = () => {
         }
     }, [dispatch, isOpenMenu])
 
+    useEffect(() => {
+        if (searchValue !== "") {
+            const result = content && content.filter((item: PostData) => item.content.title.toLowerCase().includes(searchValue.toLowerCase()))
+            setSearchResult(result)
+        } else {
+            setSearchResult([])
+        }
+    }, [searchValue, content])
+
     return (
         <div className={Styles.navBar}>
             <div className={Styles.topicMenuContainer} onClick={() => setIsOpenMenu(!isOpenMenu)} ref={topicMenuRef}>
@@ -68,11 +86,22 @@ const Menu: React.FC = () => {
                     <TopicsCard />
                 </div>}
             </div>
-            <div className={Styles.navBarContainer}>
+            <div className={Styles.navBarContainer} >
                 <Link to="/" className={Styles.logoDiv} onClick={() => dispatch(recentContent())}>
                     <Logo />
                     <div className={Styles.logo}>LinkFlow</div>
                 </Link>
+                <div className={Styles.searchDiv}>
+                    <input type="input" className={Styles.searchInput} value={searchValue} onChange={e => setSearchValue(e.target.value)}></input>
+                    <BsSearch className={Styles.searchButton} />
+                    <div className={Styles.searchResultDiv}>
+                        <ul>
+                            {searchResult ? searchResult?.map((e) => (
+                                <Link to={`/post/${e?.postsCollectionId}/${e?.categoryId}/${e?.postID}`} key={e.postID} onClick={() => handlePost(e)}><li>{e.content.title}</li></Link>
+                            )) : ""}
+                        </ul>
+                    </div>
+                </div>
                 <div className={Styles.utils}>
                     <Link to="/" className={Styles.home} onClick={() => dispatch(recentContent())}>
                         <BsHouseFill className={Styles.utilsIcon} />
