@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store/store"
 import { useEffect, useRef, useState } from "react"
 import { handleUserSign } from "../../redux/slice/userSlice"
 import { setIsOpen, setIsOpenPost, setIsOpenSnackBar } from "../../redux/slice/stateSlice"
-import { recentContent, setCurrentPost } from "../../redux/slice/contentSlice"
+import {  recentContent, setCurrentPost } from "../../redux/slice/contentSlice"
 import { Link, useNavigate } from "react-router-dom"
 import TopicsCard from "../body/TopicsCard/TopicsCard"
 import Logo from "../../../styles/Logo"
@@ -92,7 +92,13 @@ const Menu: React.FC = () => {
                     <div className={Styles.logo}>LinkFlow</div>
                 </Link>
                 <div className={Styles.searchDiv}>
-                    <input type="input" className={Styles.searchInput} value={searchValue} onChange={e => setSearchValue(e.target.value)}></input>
+                    <input
+                        type="input"
+                        placeholder="Search"
+                        className={Styles.searchInput}
+                        value={searchValue}
+                        onChange={e => setSearchValue(e.target.value)}
+                    ></input>
                     <BsSearch className={Styles.searchButton} />
                     <div className={Styles.searchResultDiv}>
                         <ul>

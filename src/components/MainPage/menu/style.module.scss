@@ -92,7 +92,7 @@
 
 .searchButton {
     position: absolute;
-    width: 30px;
+    width: 25px;
     padding: 5px;
     height: $searchHeight;
 }
@@ -101,28 +101,29 @@
     width: 50%;
     height: $searchHeight;
     padding-left: 30px;
-    border: none;
     border-radius: $radius10;
     outline: none;
     background-color: transparent;
     -webkit-transition: $transitionTime;
     transition: $transitionTime;
     box-shadow: $bscolor;
-    border: 1px solid $fcolor3;
+    border: none;
     border-radius: $radius10;
 }
 
-.searchInput:focus, .searchInput:not([value=""]) {
+.searchInput:focus,
+.searchInput:not([value=""]) {
+    border: 1px solid $fcolor3;
     width: 100%;
 }
 
 .searchInput:not([value=""]) {
-    border-bottom: none;
+    border: 1px solid $fcolor3;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-.searchInput[value=""] ~ .searchResultDiv {
+.searchInput[value=""]~.searchResultDiv {
     display: none;
 }
 
@@ -233,6 +234,6 @@
 
     .navBarContainer {
         width: 70%;
-        left: 30%;
+        left: 20%;
     }
 }
