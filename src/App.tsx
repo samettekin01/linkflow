@@ -8,6 +8,7 @@ import BottomMenu from './components/MainPage/menu/BottomMenu/BottomMenu';
 import SnackBar from './components/SnackBar/SnackBar';
 import { Outlet } from 'react-router-dom';
 import Styles from "./styles/style.module.scss"
+import Github from './assets/Github';
 
 function App() {
   const postStatus = useAppSelector(state => state.post.post)
@@ -31,6 +32,7 @@ function App() {
       {getEditPostStatus && <EditPost />}
       <BottomMenu />
       {snackBarRef.status && <SnackBar />}
+      <Github />
     </div>
   );
 }

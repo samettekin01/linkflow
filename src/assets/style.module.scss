@@ -1,0 +1,27 @@
+.github {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 10;
+    top: 80px;
+    right: 0;
+    background-color: black;
+    padding: 2px;
+    padding-right: 10px;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+}
+
+.githubIcon {
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+    cursor: pointer;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+.githubIcon:hover {
+    color: gray;
+}
